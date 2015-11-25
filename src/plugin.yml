@@ -1,0 +1,22 @@
+main: me.koenn.kp.Main
+name: Hexic Prison
+description: Hexic Prison Plugin
+author: Koenn
+version: 1.0
+
+commands:
+  mute:
+    usage: /mute <player>
+    description: Mutes or unmutes a player.
+  setprisonrank:
+    usage: CONSOLE ONLY
+    description: Sets the prison rank prefix of a player.
+  nick:
+    usage: /nick [player] <nickname>
+    description: Sets a player's nickname.
+  chat:
+    usage: /chat
+    description: Change chat mode (Server or Global).
+  relog:
+    usage: /relog <player>
+    description: Forces a player to relog.

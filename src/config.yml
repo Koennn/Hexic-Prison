@@ -1,0 +1,4 @@
+realms:
+  world: World
+
+defaultRealm: world

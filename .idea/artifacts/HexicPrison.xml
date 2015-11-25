@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="HexicPrison">
+    <output-path>$USER_HOME$/Desktop/Server/plugins/</output-path>
+    <root id="archive" name="HexicPrison.jar">
+      <element id="module-output" name="Hexic Prison" />
+      <element id="library" level="project" name="bukkit" />
+    </root>
+  </artifact>
+</component>
