@@ -7,13 +7,13 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -40,9 +40,13 @@ public class Main extends JavaPlugin implements Listener {
 
     public String[] realms;
 
+    public InventoryManager ivm;
+
     //OnEnable:
     public void onEnable() {
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
+
+        this.ivm = new InventoryManager();
 
         if(!(getConfig().contains("realms"))){
             getConfig().options().copyDefaults(true);
@@ -102,9 +106,11 @@ public class Main extends JavaPlugin implements Listener {
             if(cmd.getName().equalsIgnoreCase("gotoserver")){
                 if (checkPlayer(args, 0, 2, sender)){
                     Player p = Bukkit.getServer().getPlayer(args[0]);
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "mv tp " + p + " " + args[1]);
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "mv tp " + p.getName() + " " + args[1]);
                     ActionBarAPI.sendActionBar(p, ChatColor.GREEN + "Welcome to the " + ChatColor.YELLOW + "" + ChatColor.BOLD + "Hexic " + args[1] + ChatColor.GREEN + " Server!");
-                    if(args[1] == getConfig().get("defaultRealm")){
+                    Bukkit.getLogger().severe(getConfig().get("defaultRealm").toString() + " -- " + args[1]);
+                    if(args[1].contains(getConfig().get("defaultRealm").toString())){
+                        Bukkit.getLogger().severe(getConfig().get("defaultRealm").toString());
                         p.getInventory().setHeldItemSlot(4);
                         p.getInventory().setItemInHand(serverSelector());
                     }
@@ -180,9 +186,11 @@ public class Main extends JavaPlugin implements Listener {
         ItemStack i = new ItemStack(Material.COMPASS, 1);
         ItemMeta im = i.getItemMeta();
         im.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Server Selector");
-        List<String> l = new ArrayList<>();
-        l.add(1, ChatColor.GREEN + "Click to select a server!");
+        List<String> l = new ArrayList<String>();
+        l.add(ChatColor.GREEN + "Click to select a server!");
         im.setLore(l);
+        im.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+        im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         i.setItemMeta(im);
         return i;
     }
@@ -297,6 +305,33 @@ public class Main extends JavaPlugin implements Listener {
         if(realm.get(p) == getConfig().get("defaultRealm")){
             p.getInventory().setHeldItemSlot(4);
             p.getInventory().setItemInHand(serverSelector());
+        }
+    }
+
+    @EventHandler
+    public void onRightClick1(PlayerInteractEvent e){
+        ivm.openServerSelector(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onRightClick2(PlayerInteractEntityEvent e){
+        ivm.openServerSelector(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onRightClick(PlayerDropItemEvent e){
+        ivm.openServerSelector(e.getPlayer());
+    }
+
+    @EventHandler
+    public void onRightClick(InventoryClickEvent e){
+        e.setCancelled(true);
+        Player p = (Player) e.getWhoClicked();
+        if(new ItemStack(e.getCurrentItem().getType(), 1) == serverSelector()){
+            ivm.openServerSelector(p);
+        }
+        if(new ItemStack(e.getCursor().getType(), 1) == serverSelector()){
+            ivm.openServerSelector(p);
         }
     }
 }
