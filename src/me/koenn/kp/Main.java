@@ -1,21 +1,28 @@
 package me.koenn.kp;
 
+import com.connorlinfoot.actionbarapi.ActionBarAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.bukkit.ChatColor.translateAlternateColorCodes;
@@ -81,7 +88,7 @@ public class Main extends JavaPlugin implements Listener {
                 return true;
             }
 
-            if (cmd.getName().equalsIgnoreCase("relog")) {
+            if (cmd.getName().equalsIgnoreCase("relog")){
                 if (checkPlayer(args, 0, 1, sender)) {
                     Player p = Bukkit.getServer().getPlayer(args[0]);
                     p.kickPlayer(ChatColor.BLUE + "" + ChatColor.BOLD + "Please relog!");
@@ -91,6 +98,22 @@ public class Main extends JavaPlugin implements Listener {
                     return true;
                 }
             }
+
+            if(cmd.getName().equalsIgnoreCase("gotoserver")){
+                if (checkPlayer(args, 0, 2, sender)){
+                    Player p = Bukkit.getServer().getPlayer(args[0]);
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "mv tp " + p + " " + args[1]);
+                    ActionBarAPI.sendActionBar(p, ChatColor.GREEN + "Welcome to the " + ChatColor.YELLOW + "" + ChatColor.BOLD + "Hexic " + args[1] + ChatColor.GREEN + " Server!");
+                    if(args[1] == getConfig().get("defaultRealm")){
+                        p.getInventory().setHeldItemSlot(4);
+                        p.getInventory().setItemInHand(serverSelector());
+                    }
+                } else {
+                    sender.sendMessage(ChatColor.RED + cmd.getUsage());
+                    return true;
+                }
+            }
+
             if (sender instanceof Player) {
                 Player s = (Player) sender;
                 //Player only commands:
@@ -152,9 +175,18 @@ public class Main extends JavaPlugin implements Listener {
         return true;
     }
 
-
-
     //Methods:
+    private ItemStack serverSelector() {
+        ItemStack i = new ItemStack(Material.COMPASS, 1);
+        ItemMeta im = i.getItemMeta();
+        im.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Server Selector");
+        List<String> l = new ArrayList<>();
+        l.add(1, ChatColor.GREEN + "Click to select a server!");
+        im.setLore(l);
+        i.setItemMeta(im);
+        return i;
+    }
+
     private boolean checkPlayer(String[] p, int i, int a, CommandSender s) {
         if(p.length < a){
             return false;
@@ -180,9 +212,9 @@ public class Main extends JavaPlugin implements Listener {
             n = p.getName();
         }
         if (b) {
-            o.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.YELLOW + realm.get(p) + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.GREEN + r + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + ChatColor.GRAY + "" + "" + n + ChatColor.WHITE + ": " + m);
+            o.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.YELLOW + realm.get(p) + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.GREEN + r + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE  + m);
         } else {
-            o.sendMessage(prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.GREEN + r + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + ChatColor.GRAY + "" + "" + n + ChatColor.WHITE + ": " + m);
+            o.sendMessage(prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.GREEN + r + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE + m);
         }
     }
 
@@ -257,5 +289,14 @@ public class Main extends JavaPlugin implements Listener {
         mode.remove(p);
         mode.put(p, "server");
         spam.remove(p);
+    }
+
+    @EventHandler
+    public void onHotbarChange(PlayerItemHeldEvent e){
+        Player p = e.getPlayer();
+        if(realm.get(p) == getConfig().get("defaultRealm")){
+            p.getInventory().setHeldItemSlot(4);
+            p.getInventory().setItemInHand(serverSelector());
+        }
     }
 }

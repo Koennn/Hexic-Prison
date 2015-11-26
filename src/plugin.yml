@@ -20,3 +20,6 @@ commands:
   relog:
     usage: /relog <player>
     description: Forces a player to relog.
+  gotoserver:
+    usage: /gotoserver <player> <server>
+    description: Connects a player to a server.
