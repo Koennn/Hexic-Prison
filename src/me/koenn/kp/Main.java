@@ -36,17 +36,21 @@ public class Main extends JavaPlugin implements Listener {
     HashMap<Player, String> realm = new HashMap<>();
     HashMap<Player, String> rank = new HashMap<>();
     HashMap<Player, String> nick = new HashMap<>();
-    HashMap<Player, String> mode = new HashMap<>();
+    public HashMap<Player, String> mode = new HashMap<>();
 
     public String[] realms;
 
     public InventoryManager ivm;
+    public SettingsMenu settings;
 
     //OnEnable:
     public void onEnable() {
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
 
         this.ivm = new InventoryManager();
+        this.settings = new SettingsMenu(this);
+
+        Bukkit.getServer().getPluginManager().registerEvents(settings, this);
 
         if(!(getConfig().contains("realms"))){
             getConfig().options().copyDefaults(true);
@@ -123,6 +127,10 @@ public class Main extends JavaPlugin implements Listener {
             if (sender instanceof Player) {
                 Player s = (Player) sender;
                 //Player only commands:
+                if(cmd.getName().equalsIgnoreCase("help")){
+                    settings.openMenu(s);
+                }
+
                 if (cmd.getName().equalsIgnoreCase("nick")) {
                     if (checkPlayer(args, 0, 2, sender)) {
                         Player p = Bukkit.getServer().getPlayer(args[0]);
@@ -173,9 +181,10 @@ public class Main extends JavaPlugin implements Listener {
             }
             return true;
         } catch(NullPointerException e){
+            Bukkit.getServer().getLogger().severe("");
+            Bukkit.getServer().getLogger().severe("ERROR WHILE PERFORMING COMMAND: /" + cmd.getName() + " BY PLAYER " + sender.getName() + ":");
+            Bukkit.getServer().getLogger().severe("");
             e.printStackTrace();
-            Bukkit.getServer().getLogger().severe("ERROR WHILE PERFORMING COMMAND: " + cmd.getName() + " BY PLAYER: " + sender.getName());
-            Bukkit.getServer().getLogger().severe(e.getCause().toString());
             sender.sendMessage(ChatColor.RED + "An error occurred while performing this command. Please contact Koenn.");
         }
         return true;

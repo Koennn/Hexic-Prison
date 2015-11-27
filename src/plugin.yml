@@ -23,3 +23,7 @@ commands:
   gotoserver:
     usage: /gotoserver <player> <server>
     description: Connects a player to a server.
+  help:
+    alias: /settings
+    usage: /help
+    description: Opens settings menu.
