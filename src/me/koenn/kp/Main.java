@@ -9,6 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -317,8 +318,8 @@ public class Main extends JavaPlugin implements Listener {
         }
     }
 
-    @EventHandler
-    public void onRightClick1(PlayerInteractEvent e){
+    //@EventHandler
+    public void onRightClick1(PlayerInteractEvent e) {
         ivm.openServerSelector(e.getPlayer());
     }
 
@@ -334,13 +335,14 @@ public class Main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onRightClick(InventoryClickEvent e){
-        e.setCancelled(true);
         Player p = (Player) e.getWhoClicked();
         if(new ItemStack(e.getCurrentItem().getType(), 1) == serverSelector()){
             ivm.openServerSelector(p);
+            e.setCancelled(true);
         }
         if(new ItemStack(e.getCursor().getType(), 1) == serverSelector()){
             ivm.openServerSelector(p);
+            e.setCancelled(true);
         }
     }
 }

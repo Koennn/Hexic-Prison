@@ -3,6 +3,7 @@ package me.koenn.kp;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,14 +15,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class SettingsMenu implements Listener {
 
     private ItemStack[] settings;
-    private ItemStack[] adminSettings;
-    private HashMap<Player, Boolean> admin = new HashMap<Player, Boolean>();
+    //private ItemStack[] adminSettings;
+    //private HashMap<Player, Boolean> admin = new HashMap<Player, Boolean>();
     private ArrayList<Player> hide = new ArrayList<>();
 
     private Main main;
@@ -107,14 +107,15 @@ public class SettingsMenu implements Listener {
                 } else if (e.getSlot() == 1) {
                     if (hide.contains(p)) {
                         Bukkit.getServer().getOnlinePlayers().forEach(p::showPlayer);
-                        p.sendMessage(textColor + "All players are now " + titleColor + "visible.");
+                        p.sendMessage(textColor + "All players are now " + titleColor + "Visible.");
                         hide.remove(p);
                     } else {
                         Bukkit.getServer().getOnlinePlayers().forEach(p::hidePlayer);
-                        p.sendMessage(textColor + "All players are now " + titleColor + "hidden.");
+                        p.sendMessage(textColor + "All players are now " + titleColor + "Hidden.");
                         hide.add(p);
                     }
                 }
+                p.playSound(p.getLocation(), Sound.ORB_PICKUP, 5F, 0.2F);
                 p.openInventory(initMenu(p));
             }
         } catch(NullPointerException ex){
