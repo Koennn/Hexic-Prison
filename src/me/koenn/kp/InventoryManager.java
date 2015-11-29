@@ -3,13 +3,12 @@ package me.koenn.kp;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +20,15 @@ public class InventoryManager {
 
     private ItemStack[] servers = new ItemStack[6];
 
+    private Plugin plugin;
+
+    public String getServerSelector(){
+        return serverSelectorInventory.getName();
+    }
+
     //Constructor:
-    public InventoryManager(){
+    public InventoryManager(Plugin p){
+        plugin = p;
         ItemStack prison = new ItemStack(Material.IRON_FENCE);
         ItemStack hub = new ItemStack(Material.NETHER_STAR);
         ItemStack minigames = new ItemStack(Material.BLAZE_ROD);
@@ -33,6 +39,12 @@ public class InventoryManager {
         this.servers[2] = setData(ChatColor.GOLD + "" + ChatColor.BOLD + "Minigames", ChatColor.YELLOW + "Click to go to the Minigames server", minigames);
         this.servers[3] = setData(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Skyblock", ChatColor.GREEN + "Click to go to the Skyblock server", skyblock);
         this.servers[4] = setData(ChatColor.RED + "" + ChatColor.BOLD + "Factions", ChatColor.DARK_RED + "Click to go to the Factions server", factions);
+        Integer index = 0;
+        serverSelectorInventory = Bukkit.createInventory(null, 9, ChatColor.YELLOW + "" + ChatColor.BOLD + "Server Selector");
+        for(ItemStack i : servers){
+            serverSelectorInventory.setItem(index, i);
+            index++;
+        }
     }
 
     private ItemStack setData(String n, String l, ItemStack i){
@@ -41,18 +53,13 @@ public class InventoryManager {
         List<String> lr = new ArrayList<String>();
         lr.add(l);
         im.setLore(lr);
-        im.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
-        im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        //im.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+        //im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         i.setItemMeta(im);
         return i;
     }
 
     public void openServerSelector(Player p){
-        serverSelectorInventory = Bukkit.createInventory(null, InventoryType.HOPPER, ChatColor.YELLOW + "" + ChatColor.BOLD + "Server Selector");
-        for(ItemStack i : servers){
-            serverSelectorInventory.addItem(i);
-        }
+        p.openInventory(serverSelectorInventory);
     }
-
-
 }

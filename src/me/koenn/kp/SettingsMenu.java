@@ -34,7 +34,7 @@ public class SettingsMenu implements Listener {
     }
 
     private void initSettings(Player p){
-        this.settings = new ItemStack[2];
+        this.settings = new ItemStack[3];
 
         String m;
 
@@ -74,6 +74,17 @@ public class SettingsMenu implements Listener {
 
         settings[1] = i2;
 
+        ItemStack i3 = new ItemStack(Material.DIAMOND, 1);
+        ItemMeta im3 = i3.getItemMeta();
+        im3.setDisplayName(titleColor + "Useful commands");
+        im3.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        List<String> l3 = new ArrayList<String>();
+        l3.add(textColor + "Click to show useful commands");
+        im3.setLore(l3);
+        i3.setItemMeta(im3);
+
+        settings[2] = i3;
+
 
     }
 
@@ -104,7 +115,7 @@ public class SettingsMenu implements Listener {
                 if (e.getSlot() == 0) {
                     p.performCommand("chat");
                     main.spam.remove(p);
-                } else if (e.getSlot() == 1) {
+                } else if(e.getSlot() == 1) {
                     if (hide.contains(p)) {
                         Bukkit.getServer().getOnlinePlayers().forEach(p::showPlayer);
                         p.sendMessage(textColor + "All players are now " + titleColor + "Visible.");
@@ -114,16 +125,14 @@ public class SettingsMenu implements Listener {
                         p.sendMessage(textColor + "All players are now " + titleColor + "Hidden.");
                         hide.add(p);
                     }
+                } else if(e.getSlot() == 2){
+                    p.performCommand("helps");
                 }
-                p.playSound(p.getLocation(), Sound.ORB_PICKUP, 5F, 0.2F);
+                p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1F, 0.2F);
                 p.openInventory(initMenu(p));
             }
         } catch(NullPointerException ex){
-            Bukkit.getServer().getLogger().severe("");
-            Bukkit.getServer().getLogger().severe("ERROR WHILE PERFORMING" + e.getEventName() +  "BY PLAYER " + e.getWhoClicked().getName() + ":");
-            Bukkit.getServer().getLogger().severe("");
-            ex.printStackTrace();
-            e.getWhoClicked().sendMessage(ChatColor.RED + "An error occurred while doing this. Please contact Koenn.");
+            main.catchEvent(ex, (Player) e.getWhoClicked(), e.getEventName());
         }
     }
 }

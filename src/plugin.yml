@@ -27,3 +27,6 @@ commands:
     alias: /settings
     usage: /help
     description: Opens settings menu.
+  hub:
+    usage: /hub
+    description: Teleports you to the Hub.
