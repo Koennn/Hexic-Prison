@@ -423,6 +423,7 @@ public class Main extends JavaPlugin implements Listener {
                     }
                 }
                 change.remove(p);
+
             }
         }
     }
