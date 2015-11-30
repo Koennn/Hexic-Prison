@@ -1,6 +1,8 @@
 package me.koenn.kp;
 
 import com.connorlinfoot.actionbarapi.ActionBarAPI;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import net.minecraft.server.v1_8_R3.ExceptionEntityNotFound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -106,13 +108,19 @@ public class Main extends JavaPlugin implements Listener {
             }
 
             if (cmd.getName().equalsIgnoreCase("relog")){
-                if (checkPlayer(args, 0, 1, sender)) {
-                    Player p = Bukkit.getServer().getPlayer(args[0]);
-                    p.kickPlayer(ChatColor.BLUE + "" + ChatColor.BOLD + "Please relog!");
-                    return true;
+                if(args[0] == "all"){
+                    for(Player p : Bukkit.getServer().getOnlinePlayers()){
+                        p.kickPlayer(ChatColor.BLUE + "" + ChatColor.BOLD + "Please relog!");
+                    }
                 } else {
-                    sender.sendMessage(ChatColor.RED + cmd.getUsage());
-                    return true;
+                    if (checkPlayer(args, 0, 1, sender)) {
+                        Player p = Bukkit.getServer().getPlayer(args[0]);
+                        p.kickPlayer(ChatColor.BLUE + "" + ChatColor.BOLD + "Please relog!");
+                        return true;
+                    } else {
+                        sender.sendMessage(ChatColor.RED + cmd.getUsage());
+                        return true;
+                    }
                 }
             }
 
@@ -237,7 +245,7 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     private ItemStack serverInfo(){
-        ItemStack i = new ItemStack(Material.GOLDEN_APPLE.getId(), 1, (short) 1);
+        ItemStack i = new ItemStack(Material.EMERALD);
         ItemMeta im = i.getItemMeta();
         im.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Server Info");
         List<String> l = new ArrayList<String>();
@@ -267,7 +275,10 @@ public class Main extends JavaPlugin implements Listener {
         return true;
     }
 
-    private void sendMessage(Player o, Player p, String m, Boolean b) {
+    private void sendMessage(Player o, Player p, String m, Boolean b, Boolean irc){
+        if(!(p.getName().contains("Koenn")) && !(p.getName().contains("fredsandford007"))){
+            m = m.toLowerCase();
+        }
         PermissionUser user = PermissionsEx.getUser(p);
         String prefix = translateAlternateColorCodes('&', user.getPrefix());
         String r = getConfig().getConfigurationSection("ranks").getString(p.getName());
@@ -277,10 +288,14 @@ public class Main extends JavaPlugin implements Listener {
         } else {
             n = p.getName();
         }
-        if (b) {
-            o.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.YELLOW + p.getWorld().getName() + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.GREEN + r + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE  + m);
+        if (irc) {
+            o.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "[IRC] " + p.getName() + " " + ChatColor.WHITE + m);
         } else {
-            o.sendMessage(prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.GREEN + r + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE + m);
+            if (b) {
+                o.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.YELLOW + p.getWorld().getName() + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.GREEN + r + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE + m);
+            } else {
+                o.sendMessage(prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.GREEN + r + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE + m);
+            }
         }
     }
 
@@ -289,22 +304,30 @@ public class Main extends JavaPlugin implements Listener {
     public void onAnyMove(PlayerMoveEvent e){
         try {
             Player p = e.getPlayer();
-
             try {
                 realm.remove(p);
-                realm.put(p, getConfig().getConfigurationSection("realms").get(p.getWorld().getName()).toString());
+                realm.put(p, p.getWorld().getName());
             } catch (NullPointerException ex){
-                realm.remove(p);
-                try {
-                    realm.put(p, getConfig().get("defaultRealm").toString());
-                } catch (NullPointerException exc) {
-                    p.sendMessage(ChatColor.RED + "An error occurred while locating your realm. Please contact Koenn.");
-                    Bukkit.getServer().getLogger().severe("PLEASE SPECIFY A DEFAULT REALM");
-                }
+                p.sendMessage(ChatColor.RED + "An error occurred while locating your realm. Please contact Koenn.");
+                Bukkit.getServer().getLogger().severe("PLEASE SPECIFY A DEFAULT REALM");
             }
 
-            if (p.getWorld().getName().contains("Hub")){
-                if (p.getGameMode() != GameMode.ADVENTURE) p.setGameMode(GameMode.ADVENTURE);
+            if(p.getWorld().getName().contains("Hub")){
+                if(p.getGameMode() != GameMode.ADVENTURE)p.setGameMode(GameMode.ADVENTURE);
+            }
+        } catch(Exception ex){
+            catchEvent(ex, e.getPlayer(), e.getEventName());
+        }
+    }
+
+    @EventHandler
+    public void onGamemodeToggle(PlayerGameModeChangeEvent e){
+        Player p = e.getPlayer();
+        try{
+            if(realm.get(p).contains("Hub")){
+                e.setCancelled(true);
+                p.sendMessage(ChatColor.RED + "You are not allowed to change your gamemode here!");
+                p.setGameMode(GameMode.ADVENTURE);
             }
         } catch(Exception ex){
             catchEvent(ex, e.getPlayer(), e.getEventName());
@@ -317,7 +340,7 @@ public class Main extends JavaPlugin implements Listener {
             e.setCancelled(true);
             Player p = e.getPlayer();
             if (e.getMessage().contains("connected with an Android device using MineChat")) {
-                if (p.toString() == "Koenn") {
+                if (p.getName().equals("Koenn")){
                     e.setMessage("[IRC] Koenn connected with IRC");
                     irc.put(p, true);
                 } else {
@@ -338,15 +361,18 @@ public class Main extends JavaPlugin implements Listener {
                         mode.put(p, "server");
                     }
                     for (Player o : Bukkit.getServer().getOnlinePlayers()) {
-                        if (mode.get(o) == "global") {
-                            sendMessage(o, p, e.getMessage(), true);
+                        if(irc.get(p)){
+                            sendMessage(o, p, e.getMessage(), true, true);
                         } else {
-                            if (realm.get(o) == realm.get(p)) {
-                                sendMessage(o, p, e.getMessage(), false);
+                            if (mode.get(o) == "global") {
+                                sendMessage(o, p, e.getMessage(), true, false);
+                            } else {
+                                if (realm.get(o) == realm.get(p)) {
+                                    sendMessage(o, p, e.getMessage(), false, false);
+                                }
                             }
                         }
                     }
-
                     spam.remove(p);
                     spam.put(p, e.getMessage());
                 }
@@ -369,7 +395,7 @@ public class Main extends JavaPlugin implements Listener {
     @EventHandler
     public void onHotbarChange(PlayerItemHeldEvent e){
         Player p = e.getPlayer();
-        if(p.getWorld().getName().contains("world")){
+        if(p.getWorld().getName().contains("Hub")){
             p.getInventory().setItem(2, helpMenu());
             p.getInventory().setItem(4, serverSelector());
             p.getInventory().setItem(6, serverInfo());
@@ -438,7 +464,7 @@ public class Main extends JavaPlugin implements Listener {
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent e){
         Player p = e.getPlayer();
-        if(p.getWorld().getName().contains("world")){
+        if(p.getWorld().getName().contains("Hub")){
             e.setCancelled(true);
             ivm.openServerSelector(p);
         }
