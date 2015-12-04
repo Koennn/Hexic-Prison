@@ -1,8 +1,6 @@
 package me.koenn.kp;
 
 import com.connorlinfoot.actionbarapi.ActionBarAPI;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import net.minecraft.server.v1_8_R3.ExceptionEntityNotFound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -22,10 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.bukkit.ChatColor.translateAlternateColorCodes;
 
@@ -39,7 +34,8 @@ public class Main extends JavaPlugin implements Listener {
     HashMap<Player, String> rank = new HashMap<>();
     HashMap<Player, String> nick = new HashMap<>();
     public HashMap<Player, String> mode = new HashMap<>();
-    ArrayList<Player> change = new ArrayList<Player>();
+    ArrayList<Player> change = new ArrayList<>();
+    public HashMap<UUID, String> admins = new HashMap<>();
 
     public String[] realms;
 
@@ -48,9 +44,15 @@ public class Main extends JavaPlugin implements Listener {
 
     private ArrayList<String> serverInfo = new ArrayList<String>();
 
+    public String textColor = ChatColor.GREEN + "";
+    public String titleColor = ChatColor.YELLOW + "" + ChatColor.BOLD;
+    public String hexicTitle = ChatColor.GOLD + "" + ChatColor.BOLD;
+
     //OnEnable:
     public void onEnable() {
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
+
+        Bukkit.broadcastMessage(ChatColor.BLUE + "[Broadcast] " + ChatColor.DARK_RED + "" + ChatColor.BOLD + "Loading additional resources...");
 
         this.ivm = new InventoryManager(this);
         this.settings = new SettingsMenu(this);
@@ -73,6 +75,9 @@ public class Main extends JavaPlugin implements Listener {
         if(!(getConfig().contains("nicknames"))){
             getConfig().createSection("nicknames");
         }
+        if(!(getConfig().contains("passwords"))){
+            getConfig().createSection("passwords");
+        }
         saveConfig();
         Integer i = 0;
         for (Map.Entry<String, Object> entry : getConfig().getConfigurationSection("realms").getValues(false).entrySet()){
@@ -92,6 +97,10 @@ public class Main extends JavaPlugin implements Listener {
         try {
             //Universal commands:
             if (cmd.getName().equalsIgnoreCase("mute")) {
+                if(!(sender.hasPermission("hexic.Helper"))){
+                    noPerm(sender);
+                    return true;
+                }
                 if (checkPlayer(args, 0, 1, sender)) {
                     Player p = Bukkit.getServer().getPlayer(args[0]);
                     if (mute.containsKey(p)) {
@@ -108,6 +117,10 @@ public class Main extends JavaPlugin implements Listener {
             }
 
             if (cmd.getName().equalsIgnoreCase("relog")){
+                if(!(sender.hasPermission("hexic.Dev"))){
+                    noPerm(sender);
+                    return true;
+                }
                 if(args[0] == "all"){
                     for(Player p : Bukkit.getServer().getOnlinePlayers()){
                         p.kickPlayer(ChatColor.BLUE + "" + ChatColor.BOLD + "Please relog!");
@@ -144,6 +157,53 @@ public class Main extends JavaPlugin implements Listener {
             if (sender instanceof Player) {
                 Player s = (Player) sender;
                 //Player only commands:
+                if(cmd.getName().equalsIgnoreCase("adminmode")){
+                    if(args.length == 1){
+                        if(getConfig().getConfigurationSection("passwords").contains(s.getUniqueId().toString())){
+                            admins.remove(s.getUniqueId());
+                            admins.put(s.getUniqueId(), getConfig().getConfigurationSection("passwords").get(s.getUniqueId().toString()).toString());
+                        }
+                        if(!(s.isOp())){
+                            if (admins.containsKey(s.getUniqueId())) {
+                                if (admins.get(s.getUniqueId()).equals(args[0])) {
+                                    s.setOp(true);
+                                    s.sendMessage(ChatColor.RED + "Enabled adminmode for player '" + s.getName() + "'");
+                                    s.performCommand("gm 1");
+                                    s.performCommand("speed fly 2");
+                                } else {
+                                    s.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Incorrect password, please try again!");
+                                }
+                            } else {
+                                s.sendMessage(ChatColor.RED + "You are not an admin!");
+                            }
+                        } else {
+                            s.sendMessage(ChatColor.RED + "You are already logged in!");
+                        }
+                    } else {
+                        if(admins.containsKey(s.getUniqueId())) {
+                            s.sendMessage(ChatColor.RED + "Please specify a password!");
+                        } else {
+                            s.sendMessage(ChatColor.RED + "You are not an admin!");
+                        }
+                    }
+                }
+
+                if(cmd.getName().equalsIgnoreCase("adminregister")){
+                    if(args.length == 1){
+                        if(s.isOp()){
+                            admins.put(s.getUniqueId(), args[0]);
+                            s.sendMessage(ChatColor.RED + "Registered username '" + s.getName() + "' with password '" + args[0] + "'");
+                            getConfig().getConfigurationSection("passwords").createSection(s.getUniqueId().toString());
+                            getConfig().getConfigurationSection("passwords").set(s.getUniqueId().toString(), args[0]);
+                            saveConfig();
+                        } else {
+                            s.sendMessage(ChatColor.RED + "You need to be opped to do this!");
+                        }
+                    } else {
+                        s.sendMessage(ChatColor.RED + "Please specify a password!");
+                    }
+                }
+
                 if(cmd.getName().equalsIgnoreCase("hub")){
                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + s.getName() + " Hub");
                     change.add(s);
@@ -159,6 +219,10 @@ public class Main extends JavaPlugin implements Listener {
                 }
 
                 if (cmd.getName().equalsIgnoreCase("nick")) {
+                    if(!(sender.hasPermission("hexic.Nick"))){
+                        noPerm(sender);
+                        return true;
+                    }
                     if (checkPlayer(args, 0, 2, sender)) {
                         Player p = Bukkit.getServer().getPlayer(args[0]);
                         getConfig().getConfigurationSection("nicknames").createSection(p.getName());
@@ -281,7 +345,7 @@ public class Main extends JavaPlugin implements Listener {
         }
         PermissionUser user = PermissionsEx.getUser(p);
         String prefix = translateAlternateColorCodes('&', user.getPrefix());
-        String r = getConfig().getConfigurationSection("ranks").getString(p.getName());
+        String r = rank.get(p);
         String n;
         if(getConfig().getConfigurationSection("nicknames").contains(p.getName())) {
             n = getConfig().getConfigurationSection("nicknames").getString(p.getName());
@@ -313,7 +377,7 @@ public class Main extends JavaPlugin implements Listener {
             }
 
             if(p.getWorld().getName().contains("Hub")){
-                if(p.getGameMode() != GameMode.ADVENTURE)p.setGameMode(GameMode.ADVENTURE);
+                if(p.getGameMode() != GameMode.ADVENTURE && !(admins.containsKey(p.getUniqueId())))p.setGameMode(GameMode.ADVENTURE);
             }
         } catch(Exception ex){
             catchEvent(ex, e.getPlayer(), e.getEventName());
@@ -324,10 +388,12 @@ public class Main extends JavaPlugin implements Listener {
     public void onGamemodeToggle(PlayerGameModeChangeEvent e){
         Player p = e.getPlayer();
         try{
-            if(realm.get(p).contains("Hub")){
+            if(!(admins.containsKey(p.getUniqueId()))) {
                 e.setCancelled(true);
-                p.sendMessage(ChatColor.RED + "You are not allowed to change your gamemode here!");
-                p.setGameMode(GameMode.ADVENTURE);
+                noPerms(p);
+                if(p.getGameMode() == GameMode.CREATIVE){
+                    p.setGameMode(GameMode.SURVIVAL);
+                }
             }
         } catch(Exception ex){
             catchEvent(ex, e.getPlayer(), e.getEventName());
@@ -341,7 +407,9 @@ public class Main extends JavaPlugin implements Listener {
             Player p = e.getPlayer();
             if (e.getMessage().contains("connected with an Android device using MineChat")) {
                 if (p.getName().equals("Koenn")){
-                    e.setMessage("[IRC] Koenn connected with IRC");
+                    Bukkit.broadcastMessage("[IRC] Koenn connected with IRC");
+                    p.setGameMode(GameMode.SPECTATOR);
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "nte prefix " + p.getName() + " &f[IRC] &f");
                     irc.put(p, true);
                 } else {
                     p.kickPlayer(ChatColor.DARK_RED + "MineChat is not allowed on this server!");
@@ -361,7 +429,7 @@ public class Main extends JavaPlugin implements Listener {
                         mode.put(p, "server");
                     }
                     for (Player o : Bukkit.getServer().getOnlinePlayers()) {
-                        if(irc.get(p)){
+                        if(irc.containsKey(p)){
                             sendMessage(o, p, e.getMessage(), true, true);
                         } else {
                             if (mode.get(o) == "global") {
@@ -383,16 +451,34 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e){
-        Player p = e.getPlayer();
-        getConfig().getConfigurationSection("ranks").createSection(p.getName());
-        getConfig().getConfigurationSection("ranks").set(p.getName(), "A");
-        mode.remove(p);
-        mode.put(p, "server");
-        spam.remove(p);
+    public void onLeave(PlayerQuitEvent e){
+        try{
+            Player p = e.getPlayer();
+            p.setOp(false);
+            if(irc.containsKey(p)){
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "nte prefix " + p.getName() + "&9");
+                p.setGameMode(GameMode.ADVENTURE);
+            }
+        } catch(Exception ex){
+            catchEvent(ex, e.getPlayer(), e.getEventName());
+        }
     }
 
     @EventHandler
+    public void onJoin(PlayerJoinEvent e){
+        Player p = e.getPlayer();
+        mode.remove(p);
+        mode.put(p, "server");
+        spam.remove(p);
+        if(p.getName().contains("Koenn")){
+            Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "nte prefix " + p.getName() + " &9"), 10);
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "nte prefix " + p.getName() + "&9");
+            p.setGameMode(GameMode.ADVENTURE);
+            irc.remove(p);
+        }
+    }
+
+    //@EventHandler
     public void onHotbarChange(PlayerItemHeldEvent e){
         Player p = e.getPlayer();
         if(p.getWorld().getName().contains("Hub")){
@@ -447,17 +533,21 @@ public class Main extends JavaPlugin implements Listener {
     @EventHandler
     public void onRightClick2(PlayerInteractEntityEvent e){
         Player p = e.getPlayer();
-        if(p.getInventory().getItemInHand().equals(serverSelector())) {
-            e.setCancelled(true);
-            ivm.openServerSelector(p);
-        }
-        if(p.getInventory().getItemInHand().equals(helpMenu())) {
-            e.setCancelled(true);
-            p.performCommand("help");
-        }
-        if(p.getInventory().getItemInHand().equals(serverInfo())) {
-            e.setCancelled(true);
-            ShowServerInfo(p);
+        try {
+            if (p.getInventory().getItemInHand().equals(serverSelector())) {
+                e.setCancelled(true);
+                ivm.openServerSelector(p);
+            }
+            if (p.getInventory().getItemInHand().equals(helpMenu())) {
+                e.setCancelled(true);
+                p.performCommand("help");
+            }
+            if (p.getInventory().getItemInHand().equals(serverInfo())) {
+                e.setCancelled(true);
+                ShowServerInfo(p);
+            }
+        } catch(Exception ex){
+            //TODO: Fix error
         }
     }
 
@@ -474,52 +564,63 @@ public class Main extends JavaPlugin implements Listener {
     public void onInventoryClick(InventoryClickEvent e){
         try {
             Player p = (Player) e.getWhoClicked();
-            if (e.getCurrentItem().equals(serverSelector())){
-                ivm.openServerSelector(p);
-                e.setCancelled(true);
-            }
-            if (e.getCursor().equals(serverSelector())){
-                ivm.openServerSelector(p);
-                e.setCancelled(true);
-            }
-            if(e.getCurrentItem().equals(helpMenu())){
-                e.setCancelled(true);
-                p.performCommand("help");
-            }
-            if(e.getCurrentItem().equals(helpMenu())){
-                e.setCancelled(true);
-                p.performCommand("help");
-            }
-            if(e.getCurrentItem().equals(serverInfo())) {
-                e.setCancelled(true);
-                ShowServerInfo(p);
-            }
-            if(e.getCursor().equals(serverInfo())) {
-                e.setCancelled(true);
-                ShowServerInfo(p);
-            }
-            if (e.getInventory().getName().contains(ivm.getServerSelector())){
-                e.setCancelled(true);
-                switch(e.getSlot()){
-                    case 0:
-                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Hub");
-                        break;
-                    case 1:
-                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Prison");
-                        break;
-                    case 2:
-                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Minigames");
-                        break;
-                    case 3:
-                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Skyblock");
-                        break;
-                    case 4:
-                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Factions");
-                        break;
+            if(!(e.getCurrentItem() == (null) && !(e.getCursor() == (null)))){
+                if (e.getCurrentItem().equals(serverSelector())){
+                    ivm.openServerSelector(p);
+                    e.setCancelled(true);
+                }
+                if (e.getCursor().equals(serverSelector())){
+                    ivm.openServerSelector(p);
+                    e.setCancelled(true);
+                }
+                if(e.getCurrentItem().equals(helpMenu())){
+                    e.setCancelled(true);
+                    p.performCommand("help");
+                }
+                if(e.getCurrentItem().equals(helpMenu())){
+                    e.setCancelled(true);
+                    p.performCommand("help");
+                }
+                if(e.getCurrentItem().equals(serverInfo())) {
+                    e.setCancelled(true);
+                    ShowServerInfo(p);
+                }
+                if(e.getCursor().equals(serverInfo())) {
+                    e.setCancelled(true);
+                    ShowServerInfo(p);
+                }
+                if (e.getInventory().getName().contains(ivm.getServerSelector())){
+                    e.setCancelled(true);
+                    switch(e.getSlot()){
+                        case 0:
+                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Hub");
+                            break;
+                        case 1:
+                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Prison");
+                            break;
+                        case 2:
+                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Minigames");
+                            break;
+                        case 3:
+                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Skyblock");
+                            break;
+                        case 4:
+                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Factions");
+                            break;
+                    }
                 }
             }
         } catch(Exception ex){
             catchEvent(ex, (Player) e.getWhoClicked(), e.getEventName());
+        }
+    }
+
+    @EventHandler
+    public void commandHandler(PlayerCommandPreprocessEvent e){
+        Player p = e.getPlayer();
+        if(e.getMessage().contains(":")){
+            e.setCancelled(true);
+            p.sendMessage(hexicTitle + "[Hexic] " + textColor + "This command is not allowed!");
         }
     }
 
@@ -529,5 +630,13 @@ public class Main extends JavaPlugin implements Listener {
         Bukkit.getServer().getLogger().severe("");
         e.printStackTrace();
         p.sendMessage(ChatColor.RED + "An error occurred while doing this. Please contact Koenn.");
+    }
+
+    public void noPerm(CommandSender p){
+        p.sendMessage(hexicTitle + hexicTitle + "[Hexic] " + textColor + "You do not have the permission to do this.");
+    }
+
+    public void noPerms(Player p){
+        p.sendMessage(hexicTitle + hexicTitle + "[Hexic] " + textColor + "You do not have the permission to do this.");
     }
 }

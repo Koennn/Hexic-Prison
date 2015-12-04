@@ -30,3 +30,20 @@ commands:
   hub:
     usage: /hub
     description: Teleports you to the Hub.
+  adminmode:
+    usage: /adminmode <password>
+    description: Log in to adminmode.
+  adminregister:
+    usage: /adminregister <password>
+    description: Register as an admin (Op required)
+
+permissions:
+  hexic.Dev:
+    description: All hexic developer/owner only stuff.
+    default: op
+  hexic.Helper:
+    description: For all our awsome helpers.
+    default: op
+  hexic.Nick:
+    description: Allows you to set your nickname.
+    default: op
