@@ -10,5 +10,6 @@
     <orderEntry type="library" name="bukkit" level="project" />
     <orderEntry type="library" name="PermissionsEx-1.23.3" level="project" />
     <orderEntry type="library" name="ActionBarAPI" level="project" />
+    <orderEntry type="library" name="CraftIRC" level="project" />
   </component>
 </module>

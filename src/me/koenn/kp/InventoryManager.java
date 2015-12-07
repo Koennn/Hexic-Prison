@@ -24,11 +24,12 @@ public class InventoryManager {
     public String getServerSelector(){
         return serverSelectorInventory.getName();
     }
+    public ItemStack prison;
 
     //Constructor:
     public InventoryManager(Plugin p){
         plugin = p;
-        ItemStack prison = new ItemStack(Material.IRON_FENCE);
+        prison = new ItemStack(Material.IRON_FENCE);
         ItemStack hub = new ItemStack(Material.NETHER_STAR);
         ItemStack minigames = new ItemStack(Material.BLAZE_ROD);
         ItemStack skyblock = new ItemStack(Material.GRASS);
@@ -44,6 +45,7 @@ public class InventoryManager {
             serverSelectorInventory.setItem(index, i);
             index++;
         }
+        serverSelectorInventory.setItem(1, setData(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "Prison", ChatColor.GRAY + "Click to go to the Prison server", prison));
     }
 
     private ItemStack setData(String n, String l, ItemStack i){
@@ -59,6 +61,9 @@ public class InventoryManager {
     }
 
     public void openServerSelector(Player p){
+        InventoryManager ivm = new InventoryManager(plugin);
+        prison = new ItemStack(Material.IRON_FENCE);
+        serverSelectorInventory.setItem(1, setData(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "Prison", ChatColor.GRAY + "Click to go to the Prison server", prison));
         p.openInventory(serverSelectorInventory);
     }
 }

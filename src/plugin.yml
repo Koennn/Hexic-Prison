@@ -36,6 +36,9 @@ commands:
   adminregister:
     usage: /adminregister <password>
     description: Register as an admin (Op required)
+  blockcmd:
+    usage: CONSOLE ONLY
+    description: Blocks all commands for a player.
 
 permissions:
   hexic.Dev:
