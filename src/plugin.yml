@@ -39,6 +39,9 @@ commands:
   blockcmd:
     usage: CONSOLE ONLY
     description: Blocks all commands for a player.
+  history:
+    usage: /history <player>
+    description: See the history of the player.
 
 permissions:
   hexic.Dev:

@@ -39,12 +39,13 @@ public class Main extends JavaPlugin implements Listener {
     public HashMap<UUID, String> admins = new HashMap<>();
     public ArrayList<Player> block = new ArrayList<>();
 
+    public HashMap<Player, Integer> warns = new HashMap<>();
+    public HashMap<Player, Integer> mutes = new HashMap<>();
+
     public String[] realms;
 
     public InventoryManager ivm;
     public SettingsMenu settings;
-
-    private ArrayList<String> serverInfo = new ArrayList<String>();
 
     public String textColor = ChatColor.GREEN + "";
     public String titleColor = ChatColor.YELLOW + "" + ChatColor.BOLD;
@@ -105,6 +106,13 @@ public class Main extends JavaPlugin implements Listener {
                         p.sendMessage(ChatColor.DARK_GRAY + "Player" + ChatColor.YELLOW + " " + ChatColor.BOLD + p.getName() + ChatColor.DARK_GRAY + " was unmuted by" + ChatColor.YELLOW + " " + ChatColor.BOLD + sender.getName());
                     } else {
                         mute.put(p, true);
+                        if(mutes.containsKey(p)){
+                            int i = mutes.get(p);
+                            mutes.remove(p);
+                            mutes.put(p, i + 1);
+                        } else {
+                            mutes.put(p, 1);
+                        }
                         p.sendMessage(ChatColor.DARK_GRAY + "Player" + ChatColor.YELLOW + " " + ChatColor.BOLD + p.getName() + ChatColor.DARK_GRAY + " was muted by" + ChatColor.YELLOW + " " + ChatColor.BOLD + sender.getName());
                     }
                 } else {
@@ -151,6 +159,12 @@ public class Main extends JavaPlugin implements Listener {
             if (sender instanceof Player) {
                 Player s = (Player) sender;
                 //Player only commands:
+                if(cmd.getName().equalsIgnoreCase("history"))
+                    if (checkPlayer(args, 0, 1, sender)){
+                        Player p = Bukkit.getServer().getPlayer(args[0]);
+                        s.openInventory(ivm.playerInfoInit(p, s));
+                    }
+
                 if(cmd.getName().equalsIgnoreCase("adminmode")){
                     if(args.length == 1){
                         if(getConfig().getConfigurationSection("passwords").contains(s.getUniqueId().toString())){
@@ -201,12 +215,10 @@ public class Main extends JavaPlugin implements Listener {
                 if(cmd.getName().equalsIgnoreCase("hub")){
                     //Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + s.getName() + " Hub");
                     s.performCommand("tohub");
-                    change.add(s);
                     s.getInventory().setItem(2, helpMenu());
                     s.getInventory().setItem(4, serverSelector());
                     s.getInventory().setItem(6, serverInfo());
                     s.getInventory().setHeldItemSlot(4);
-                    change.remove(s);
                 }
 
                 if(cmd.getName().equalsIgnoreCase("help")){
@@ -242,11 +254,11 @@ public class Main extends JavaPlugin implements Listener {
                     if (mode.get(s) == "server") {
                         mode.remove(s);
                         mode.put(s, "global");
-                        s.sendMessage(ChatColor.GREEN + "You are now chatting in " + ChatColor.YELLOW + ChatColor.BOLD + "Global" + ChatColor.GREEN + " chat.");
+                        s.sendMessage(ChatColor.GREEN + "You are now listening to " + ChatColor.YELLOW + ChatColor.BOLD + "Global" + ChatColor.GREEN + " chat.");
                     } else if(mode.get(s) == "global") {
                         mode.remove(s);
                         mode.put(s, "server");
-                        s.sendMessage(ChatColor.GREEN + "You are now chatting in " + ChatColor.YELLOW + ChatColor.BOLD + "Server" + ChatColor.GREEN + " chat.");
+                        s.sendMessage(ChatColor.GREEN + "You are now listening to " + ChatColor.YELLOW + ChatColor.BOLD + "Server" + ChatColor.GREEN + " chat.");
                     } else {
                         s.kickPlayer(ChatColor.BLUE + "" + ChatColor.BOLD + "Please relog!");
                     }
@@ -346,7 +358,7 @@ public class Main extends JavaPlugin implements Listener {
         return true;
     }
 
-    private void sendMessage(Player o, Player p, String m, Boolean b, Boolean irc){
+    private void sendMessage(Player o, Player p, String m, Boolean b, Boolean irc, String mode){
         if(!(p.getName().contains("Koenn")) && !(p.getName().contains("fredsandford007"))){
             m = m.toLowerCase();
         }
@@ -363,9 +375,13 @@ public class Main extends JavaPlugin implements Listener {
             o.sendMessage(ChatColor.WHITE + "" + ChatColor.BOLD + "[IRC] " + p.getName() + " " + ChatColor.WHITE + m);
         } else {
             if (b) {
-                o.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.YELLOW + p.getWorld().getName() + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.GREEN + r + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE + m);
+                o.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.YELLOW + p.getWorld().getName() + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "" + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE + m);
             } else {
-                o.sendMessage(prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.GREEN + r + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE + m);
+                if(mode == "Prison"){
+                    o.sendMessage(prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.GREEN + r + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE + m);
+                } else {
+                    o.sendMessage(prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "" + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE + m);
+                }
             }
         }
     }
@@ -430,13 +446,17 @@ public class Main extends JavaPlugin implements Listener {
                     }
                     for (Player o : Bukkit.getServer().getOnlinePlayers()) {
                         if(irc.containsKey(p)){
-                            sendMessage(o, p, e.getMessage(), true, true);
+                            sendMessage(o, p, e.getMessage(), true, true, "Normal");
                         } else {
                             if (mode.get(o) == "global") {
-                                sendMessage(o, p, e.getMessage(), true, false);
+                                sendMessage(o, p, e.getMessage(), true, false, "Normal");
                             } else {
-                                if (realm.get(o) == realm.get(p)) {
-                                    sendMessage(o, p, e.getMessage(), false, false);
+                                if (o.getWorld().getName() == p.getWorld().getName()) {
+                                    if(p.getWorld().getName().contains("Prison")){
+                                        sendMessage(o, p, e.getMessage(), false, false, "Prison");
+                                    } else {
+                                        sendMessage(o, p, e.getMessage(), false, false, "Normal");
+                                    }
                                 }
                             }
                         }
@@ -590,6 +610,13 @@ public class Main extends JavaPlugin implements Listener {
                     e.setCancelled(true);
                     ShowServerInfo(p);
                 }
+                if(e.getInventory().getName().contains(ivm.getInfoThingy())){
+                    e.setCancelled(true);
+                    if(e.getSlot() == 4){
+                        p.teleport(ivm.history.get(p));
+                        p.sendMessage(textColor + "Teleporting to " + titleColor + ivm.history.get(p).getName());
+                    }
+                }
                 if (e.getInventory().getName().contains(ivm.getServerSelector())){
                     e.setCancelled(true);
                     switch(e.getSlot()){
@@ -636,7 +663,7 @@ public class Main extends JavaPlugin implements Listener {
             p.sendMessage(hexicTitle + "[Hexic] " + textColor + "This command is not allowed!");
         }
         if(block.contains(p)){
-            if(!(e.getMessage().contains("leave"))){
+            if(!(e.getMessage().contains("leave")) && !(e.getMessage().contains("kit"))){
                 e.setCancelled(true);
                 p.sendMessage(ChatColor.RED + "You cant do that in a PvP arena!");
             }
