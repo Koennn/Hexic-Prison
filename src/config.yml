@@ -2,5 +2,12 @@ realms:
   world: World
 
 passwords:
+  example: password
 
 defaultRealm: world
+
+warns:
+  example: 1
+
+mutes:
+  example: 1

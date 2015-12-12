@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
@@ -12,6 +13,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 public class InventoryManager {
 
@@ -20,11 +22,12 @@ public class InventoryManager {
     private Inventory playerInfo;
 
     public HashMap<Player, Player> history = new HashMap<>();
+    public ArrayList<Player> h = new ArrayList<>();
 
     private ItemStack[] servers = new ItemStack[6];
 
     private Plugin plugin;
-    private Main m;
+    private Main main;
 
     public String getInfoThingy(){
         return playerInfo.getName();
@@ -35,7 +38,8 @@ public class InventoryManager {
     public ItemStack prison;
 
     //Constructor:
-    public InventoryManager(Plugin p){
+    public InventoryManager(Plugin p, Main m){
+        this.main = m;
         plugin = p;
         prison = new ItemStack(Material.IRON_FENCE);
         ItemStack hub = new ItemStack(Material.NETHER_STAR);
@@ -62,14 +66,12 @@ public class InventoryManager {
         List<String> lr = new ArrayList<String>();
         lr.add(l);
         im.setLore(lr);
-        //im.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
-        //im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         i.setItemMeta(im);
         return i;
     }
 
     public void openServerSelector(Player p){
-        InventoryManager ivm = new InventoryManager(plugin);
+        InventoryManager ivm = new InventoryManager(plugin, main);
         prison = new ItemStack(Material.IRON_FENCE);
         serverSelectorInventory.setItem(1, setData(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "Prison", ChatColor.GRAY + "Click to go to the Prison server", prison));
         p.openInventory(serverSelectorInventory);
@@ -78,17 +80,15 @@ public class InventoryManager {
     public Inventory playerInfoInit(Player p, Player s){
         history.remove(s);
         history.put(s, p);
-        playerInfo = Bukkit.createInventory(null, 9, "Information about " + p.getName());
+        h.add(s);
+        playerInfo = Bukkit.createInventory(null, 9, "Info about " + p.getName());
         ItemStack i = new ItemStack(Material.INK_SACK, 1, (byte) 1);
         ItemMeta im = i.getItemMeta();
         im.setDisplayName(ChatColor.RED + p.getName() + "'s warnings");
         List<String> l = new ArrayList<>();
-        try{
-            l.add(ChatColor.DARK_AQUA + p.getName() + " got warned " + m.warns.get(p) + " times!");
-        } catch (Exception ex){
-            l.add(ChatColor.DARK_AQUA + p.getName() + " got warned 0 times!");
-        }
+        l.add(ChatColor.DARK_AQUA + p.getName() + " got warned " + main.getWarns(p).toString() + " times!");
         im.setLore(l);
+        im.addItemFlags(ItemFlag.HIDE_PLACED_ON);
         i.setItemMeta(im);
         playerInfo.setItem(2, i);
         l.clear();
@@ -97,18 +97,16 @@ public class InventoryManager {
         im.setDisplayName(ChatColor.RED + "Teleport to " + p.getName());
         l.add(ChatColor.DARK_AQUA + "Click to teleport to " + p.getName());
         im.setLore(l);
+        im.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
         i.setItemMeta(im);
         playerInfo.setItem(4, i);
         l.clear();
         i = new ItemStack(Material.BARRIER, 1);
         im = i.getItemMeta();
         im.setDisplayName(ChatColor.RED + p.getName() + "'s mutes");
-        try{
-            l.add(ChatColor.DARK_AQUA + p.getName() + " got muted " + m.mutes.get(p) + " times!");
-        } catch (Exception ex){
-            l.add(ChatColor.DARK_AQUA + p.getName() + " got muted 0 times!");
-        }
+        l.add(ChatColor.DARK_AQUA + p.getName() + " got muted " + main.getMutes(p) + " times!");
         im.setLore(l);
+        im.addItemFlags(ItemFlag.HIDE_PLACED_ON);
         i.setItemMeta(im);
         playerInfo.setItem(6, i);
         l.clear();

@@ -42,6 +42,9 @@ commands:
   history:
     usage: /history <player>
     description: See the history of the player.
+  warn:
+    usage: /warn <player> <reason>
+    description: Give a player a warning.
 
 permissions:
   hexic.Dev:

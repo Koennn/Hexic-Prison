@@ -1,12 +1,14 @@
 package me.koenn.kp;
 
 import com.connorlinfoot.actionbarapi.ActionBarAPI;
+import com.vexsoftware.votifier.model.VotifierEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,6 +19,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
@@ -58,10 +62,15 @@ public class Main extends JavaPlugin implements Listener {
 
         Bukkit.broadcastMessage(ChatColor.BLUE + "[Broadcast] " + ChatColor.DARK_RED + "" + ChatColor.BOLD + "Loading additional resources...");
 
-        this.ivm = new InventoryManager(this);
+        this.ivm = new InventoryManager(this, this);
         this.settings = new SettingsMenu(this);
 
         Bukkit.getServer().getPluginManager().registerEvents(settings, this);
+
+        if(!(getDataFolder().exists())){
+            getConfig().options().copyDefaults(true);
+            saveConfig();
+        }
 
         if(!(getConfig().contains("realms"))){
             getConfig().options().copyDefaults(true);
@@ -90,10 +99,80 @@ public class Main extends JavaPlugin implements Listener {
         }
     }
 
+    public void addWarning(Player p){
+        ConfigurationSection w = getConfig().getConfigurationSection("warns");
+        Integer a;
+        try{
+            a = w.getInt(p.getUniqueId().toString());
+        } catch (Exception ex){
+            w.createSection(p.getUniqueId().toString());
+            a = 0;
+        }
+        w.set(p.getUniqueId().toString(), (a + 1));
+        saveConfig();
+    }
+
+    public void addMute(Player p){
+        ConfigurationSection w = getConfig().getConfigurationSection("mutes");
+        Integer a;
+        try{
+            a = w.getInt(p.getUniqueId().toString());
+        } catch (Exception ex){
+            w.createSection(p.getUniqueId().toString());
+            a = 0;
+        }
+        w.set(p.getUniqueId().toString(), (a + 1));
+        saveConfig();
+    }
+
+    public Integer getWarns(Player p){
+        ConfigurationSection w = getConfig().getConfigurationSection("warns");
+        Integer a;
+        try{
+            a = w.getInt(p.getUniqueId().toString());
+        } catch (Exception ex){
+            w.createSection(p.getUniqueId().toString());
+            a = 0;
+            Bukkit.getLogger().log(Level.INFO, "Failed to load warns for player... Setting value to 0.");
+        }
+        return a;
+    }
+
+    public Integer getMutes(Player p){
+        ConfigurationSection w = getConfig().getConfigurationSection("mutes");
+        Integer a;
+        try{
+            a = w.getInt(p.getUniqueId().toString());
+        } catch (Exception ex){
+            w.createSection(p.getUniqueId().toString());
+            a = 0;
+            Bukkit.getLogger().log(Level.INFO, "Failed to load warns for player... Setting value to 0.");
+        }
+        return a;
+    }
+
+
     //Command Handler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
         try {
             //Universal commands:
+            if(cmd.getName().equalsIgnoreCase("warn")){
+                if(!(sender.hasPermission("hexic.Helper"))){
+                    noPerm(sender, cmd);
+                    return true;
+                }
+                if(checkPlayer(args, 0, 2, sender)) {
+                    Player p = Bukkit.getServer().getPlayer(args[0]);
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 1; i < args.length; i++) {
+                        sb.append(args[i]).append(" ");
+                    }
+                    String message = sb.toString().trim();
+                    p.sendMessage(ChatColor.DARK_RED + "" + ChatColor.BOLD + "Warning from " + sender.getName() + ": " + message);
+                    addWarning(p);
+                }
+            }
+
             if (cmd.getName().equalsIgnoreCase("mute")) {
                 if(!(sender.hasPermission("hexic.Helper"))){
                     noPerm(sender, cmd);
@@ -106,13 +185,7 @@ public class Main extends JavaPlugin implements Listener {
                         p.sendMessage(ChatColor.DARK_GRAY + "Player" + ChatColor.YELLOW + " " + ChatColor.BOLD + p.getName() + ChatColor.DARK_GRAY + " was unmuted by" + ChatColor.YELLOW + " " + ChatColor.BOLD + sender.getName());
                     } else {
                         mute.put(p, true);
-                        if(mutes.containsKey(p)){
-                            int i = mutes.get(p);
-                            mutes.remove(p);
-                            mutes.put(p, i + 1);
-                        } else {
-                            mutes.put(p, 1);
-                        }
+                        addMute(p);
                         p.sendMessage(ChatColor.DARK_GRAY + "Player" + ChatColor.YELLOW + " " + ChatColor.BOLD + p.getName() + ChatColor.DARK_GRAY + " was muted by" + ChatColor.YELLOW + " " + ChatColor.BOLD + sender.getName());
                     }
                 } else {
@@ -359,7 +432,7 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     private void sendMessage(Player o, Player p, String m, Boolean b, Boolean irc, String mode){
-        if(!(p.getName().contains("Koenn")) && !(p.getName().contains("fredsandford007"))){
+        if(!(p.getName().contains("Koenn")) && !(p.getName().contains("fredsandford007")) && !(p.getName().contains("Shenz"))){
             m = m.toLowerCase();
         }
         PermissionUser user = PermissionsEx.getUser(p);
@@ -409,7 +482,11 @@ public class Main extends JavaPlugin implements Listener {
             }
 
             if(p.getWorld().getName().contains("Hub")){
-                if(p.getGameMode() != GameMode.ADVENTURE && !(admins.containsKey(p.getUniqueId())))p.setGameMode(GameMode.ADVENTURE);
+                if(p.getGameMode() != GameMode.ADVENTURE && !(admins.containsKey(p.getUniqueId()))){
+                    p.setGameMode(GameMode.ADVENTURE);
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1000000, 4, true, false));
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 2, true, false));
+                }
             }
         } catch(Exception ex){
             catchEvent(ex, e.getPlayer(), e.getEventName());
@@ -487,7 +564,8 @@ public class Main extends JavaPlugin implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
         Player p = e.getPlayer();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () ->p.performCommand("ircusers"), 20);
+        p.setOp(false);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> p.performCommand("ircusers"), 20);
         mode.remove(p);
         mode.put(p, "server");
         spam.remove(p);
@@ -610,7 +688,7 @@ public class Main extends JavaPlugin implements Listener {
                     e.setCancelled(true);
                     ShowServerInfo(p);
                 }
-                if(e.getInventory().getName().contains(ivm.getInfoThingy())){
+                if(e.getInventory().getName().contains("Information about ")){
                     e.setCancelled(true);
                     if(e.getSlot() == 4){
                         p.teleport(ivm.history.get(p));
@@ -658,7 +736,7 @@ public class Main extends JavaPlugin implements Listener {
     @EventHandler
     public void commandHandler(PlayerCommandPreprocessEvent e){
         Player p = e.getPlayer();
-        if(e.getMessage().contains(":") && !(e.getMessage().contains("warp")) && !(e.getMessage().contains("kit"))){
+        if(e.getMessage().contains(":") && !(e.getMessage().contains("warp")) && !(e.getMessage().contains("kit")) && !(p.isOp())){
             e.setCancelled(true);
             p.sendMessage(hexicTitle + "[Hexic] " + textColor + "This command is not allowed!");
         }
@@ -680,7 +758,7 @@ public class Main extends JavaPlugin implements Listener {
 
     public void catchEvent(Exception e, Player p, String s){
         Bukkit.getServer().getLogger().severe("");
-        Bukkit.getServer().getLogger().severe("ERROR WHILE PERFORMING " + s + " BY PLAYER " + p.getName() + ":");
+        Bukkit.getServer().getLogger().severe("ERROR WHILE PERFORMING '" + s + "' BY PLAYER '" + p.getName() + "':");
         Bukkit.getServer().getLogger().severe("");
         e.printStackTrace();
         p.sendMessage(ChatColor.RED + "An error occurred while doing this. Please contact Koenn.");
@@ -695,5 +773,12 @@ public class Main extends JavaPlugin implements Listener {
         p.sendMessage(hexicTitle + hexicTitle + "[Hexic] " + textColor + "You do not have the permission to do this.");
     }
 
+    @EventHandler
+    public void onVote(VotifierEvent e){
+        if(!(Bukkit.getServer().getPlayer(e.getVote().getUsername()).isOnline())){
+            Player p = Bukkit.getServer().getPlayer(e.getVote().getUsername());
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "key " + p.getName() + " voting");
+        }
+    }
 
 }

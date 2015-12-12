@@ -88,10 +88,6 @@ public class SettingsMenu implements Listener {
 
     }
 
-    //private void initAdminSettings(Player p){
-
-    //}
-
     public void openMenu(Player p){
         p.openInventory(initMenu(p));
     }
