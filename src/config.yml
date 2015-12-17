@@ -1,10 +1,11 @@
 realms:
   world: World
 
+ranks:
+  example: A
+
 passwords:
   example: password
-
-defaultRealm: world
 
 warns:
   example: 1

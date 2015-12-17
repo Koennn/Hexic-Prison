@@ -6,7 +6,7 @@ version: 1.0
 
 commands:
   mute:
-    usage: /mute <player>
+    usage: /mute <player> <time> <s,m,h,d}>
     description: Mutes or unmutes a player.
   setprisonrank:
     usage: CONSOLE ONLY
@@ -45,6 +45,9 @@ commands:
   warn:
     usage: /warn <player> <reason>
     description: Give a player a warning.
+  ranks:
+    usage: /ranks
+    description: See all the ranks
 
 permissions:
   hexic.Dev:
