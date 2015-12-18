@@ -12,6 +12,7 @@ public class Mute extends HexicCommand{
 
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onCommand(CommandSender sender, String[] args) {
         if (main.checkPlayer(args, 0, 3, sender)){
             Integer time;

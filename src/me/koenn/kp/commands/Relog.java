@@ -13,6 +13,7 @@ public class Relog extends HexicCommand {
 
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onCommand(CommandSender sender, String[] args) {
         if(args.length < 1){
             MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, super.getUsage());

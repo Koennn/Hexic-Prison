@@ -12,6 +12,7 @@ public class Warn extends HexicCommand {
 
     private Main main;
 
+    @SuppressWarnings("deprecation")
     public void onCommand(CommandSender sender, String[] args) {
         Bukkit.getLogger().log(Level.INFO, "Run");
         if (main.checkPlayer(args, 0, 2, sender)) {

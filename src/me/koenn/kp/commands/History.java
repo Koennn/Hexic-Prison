@@ -12,6 +12,7 @@ public class History extends HexicCommand {
 
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onCommand(CommandSender sender, String[] args) {
         Player s = (Player) sender;
         if (main.checkPlayer(args, 0, 1, sender)) {

@@ -14,6 +14,7 @@ public class Gotoserver extends HexicCommand {
 
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onCommand(CommandSender sender, String[] args) {
         if (main.checkPlayer(args, 0, 2, sender)){
             Player p = Bukkit.getServer().getPlayer(args[0]);
