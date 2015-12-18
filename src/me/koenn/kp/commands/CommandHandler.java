@@ -23,6 +23,10 @@ public class CommandHandler implements CommandExecutor{
         cmds.add(new History(main));
         cmds.add(new Hub(main));
         cmds.add(new Mute(main));
+        cmds.add(new Nick(main));
+        cmds.add(new Relog(main));
+        cmds.add(new Help(main));
+        cmds.add(new Ranks(main));
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){

@@ -28,7 +28,7 @@ public class Chat extends HexicCommand {
     }
 
     public Chat(Main main) {
-        super("Change chat mode", "/chat", "ct");
+        super("Change chat mode", "/chat", "ch");
         this.main = main;
     }
 }

@@ -17,6 +17,7 @@ commands:
   chat:
     usage: /chat
     description: Change chat mode (Server or Global).
+    aliases: /ch
   relog:
     usage: /relog <player>
     description: Forces a player to relog.

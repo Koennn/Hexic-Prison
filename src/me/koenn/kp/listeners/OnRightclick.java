@@ -1,12 +1,16 @@
-package me.koenn.kp.commands;
+package me.koenn.kp.listeners;
 
 import me.koenn.kp.Main;
+import me.koenn.kp.commands.MessageManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -14,9 +18,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hub extends HexicCommand {
+public class OnRightclick implements Listener {
 
     private Main main;
+
+    public OnRightclick(Main main) {
+        this.main = main;
+    }
 
     private ItemStack serverSelector() {
         ItemStack i = new ItemStack(Material.COMPASS, 1);
@@ -57,18 +65,25 @@ public class Hub extends HexicCommand {
         return i;
     }
 
-    @Override
-    public void onCommand(CommandSender sender, String[] args) {
-        Player s = (Player) sender;
-        s.performCommand("tohub");
-        s.getInventory().setItem(2, helpMenu());
-        s.getInventory().setItem(4, serverSelector());
-        s.getInventory().setItem(6, serverInfo());
-        s.getInventory().setHeldItemSlot(4);
+    @EventHandler
+    public void onRightclick(PlayerInteractEvent e) {
+        try {
+            Player p = e.getPlayer();
+            if(p.getInventory().getItemInHand().equals(serverSelector())) {
+                e.setCancelled(true);
+                main.ivm.openServerSelector(p);
+            }
+            if(p.getInventory().getItemInHand().equals(helpMenu())) {
+                e.setCancelled(true);
+                p.performCommand("help");
+            }
+            if(p.getInventory().getItemInHand().equals(serverInfo())) {
+                e.setCancelled(true);
+                main.ShowServerInfo(p);
+            }
+        } catch (Exception ex) {
+            main.catchEvent(ex, e.getPlayer(), e.getEventName());
+        }
     }
 
-    public Hub(Main main) {
-        super("Go to the hub", "/hub", "h");
-        this.main = main;
-    }
 }

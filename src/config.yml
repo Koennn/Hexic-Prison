@@ -1,6 +1,3 @@
-realms:
-  world: World
-
 ranks:
   example: A
 
@@ -12,3 +9,6 @@ warns:
 
 mutes:
   example: 1
+
+nicknames:
+  example: example
