@@ -1,40 +1,25 @@
 package me.koenn.kp;
 
-import com.vexsoftware.votifier.model.VotifierEvent;
 import me.koenn.kp.commands.CommandHandler;
+import me.koenn.kp.commands.MessageManager;
 import me.koenn.kp.listeners.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.*;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import ru.tehkode.permissions.PermissionUser;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Level;
-
-import static org.bukkit.ChatColor.translateAlternateColorCodes;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -150,7 +135,7 @@ public class Main extends JavaPlugin implements Listener {
         } catch (Exception ex){
             w.createSection(p.getUniqueId().toString());
             a = 0;
-            Bukkit.getLogger().log(Level.INFO, "Failed to load warns for player... Setting value to 0.");
+            log("Failed to load warns for player... Setting value to 0.");
         }
         return a;
     }
@@ -172,8 +157,6 @@ public class Main extends JavaPlugin implements Listener {
         Bukkit.getLogger().log(Level.INFO, "[HexicPrison] " + s);
     }
 
-
-
     public void ShowServerInfo(Player p){
         p.performCommand("info");
     }
@@ -194,14 +177,12 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     public void catchEvent(Exception e, Player p, String s){
-        Bukkit.getServer().getLogger().severe("");
         Bukkit.getServer().getLogger().severe("ERROR WHILE PERFORMING '" + s + "' BY PLAYER '" + p.getName() + "':");
-        Bukkit.getServer().getLogger().severe("");
         e.printStackTrace();
-        p.sendMessage(ChatColor.RED + "An error occurred while doing this. Please contact Koenn.");
+        MessageManager.getInstance().msg(p, MessageManager.MessageType.WARN, "An error occurred while doing this. Please contact Koenn.");
     }
 
     public void noPerms(Player p){
-        p.sendMessage(hexicTitle + hexicTitle + "[Hexic] " + textColor + "You do not have the permission to do this.");
+        MessageManager.getInstance().msg(p, MessageManager.MessageType.WARN, "You do not have the permission to do this.");
     }
 }
