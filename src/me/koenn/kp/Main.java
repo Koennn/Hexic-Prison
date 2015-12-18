@@ -90,6 +90,7 @@ public class Main extends JavaPlugin{
         Bukkit.getServer().getPluginManager().registerEvents(new OnRightclick(this), this);
         Bukkit.getServer().getPluginManager().registerEvents(new OnInventoryClick(this), this);
         Bukkit.getServer().getPluginManager().registerEvents(new OnItemDrop(this), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new OnLeave(this), this);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> Bukkit.broadcastMessage(hexicTitle + hexicTitle + "[Hexic] " + textColor + "If you find any bugs, use /report to report a bug."), 1, 8400);
         Bukkit.broadcastMessage(ChatColor.BLUE + "[Broadcast] " + ChatColor.DARK_RED + "" + ChatColor.BOLD + "Loading additional resources...");
@@ -98,58 +99,6 @@ public class Main extends JavaPlugin{
             getConfig().options().copyDefaults(true);
             saveConfig();
         }
-    }
-
-    public void addWarning(Player p){
-        ConfigurationSection w = getConfig().getConfigurationSection("warns");
-        Integer a;
-        try{
-            a = w.getInt(p.getUniqueId().toString());
-        } catch (Exception ex){
-            w.createSection(p.getUniqueId().toString());
-            a = 0;
-        }
-        w.set(p.getUniqueId().toString(), (a + 1));
-        saveConfig();
-    }
-
-    public void addMute(Player p){
-        ConfigurationSection w = getConfig().getConfigurationSection("mutes");
-        Integer a;
-        try{
-            a = w.getInt(p.getUniqueId().toString());
-        } catch (Exception ex){
-            w.createSection(p.getUniqueId().toString());
-            a = 0;
-        }
-        w.set(p.getUniqueId().toString(), (a + 1));
-        saveConfig();
-    }
-
-    public Integer getWarns(Player p){
-        ConfigurationSection w = getConfig().getConfigurationSection("warns");
-        Integer a;
-        try{
-            a = w.getInt(p.getUniqueId().toString());
-        } catch (Exception ex){
-            w.createSection(p.getUniqueId().toString());
-            a = 0;
-            log("Failed to load warns for player... Setting value to 0.");
-        }
-        return a;
-    }
-
-    public Integer getMutes(Player p){
-        ConfigurationSection w = getConfig().getConfigurationSection("mutes");
-        Integer a;
-        try{
-            a = w.getInt(p.getUniqueId().toString());
-        } catch (Exception ex){
-            w.createSection(p.getUniqueId().toString());
-            a = 0;
-            log("Failed to load mutes for player... Setting value to 0.");
-        }
-        return a;
     }
 
     public void log(String s){

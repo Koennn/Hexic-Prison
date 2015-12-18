@@ -3,6 +3,7 @@ package me.koenn.kp;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -35,6 +36,32 @@ public class InventoryManager {
         return serverSelectorInventory.getName();
     }
     public ItemStack prison;
+
+    public Integer getWarns(Player p){
+        ConfigurationSection w = main.getConfig().getConfigurationSection("warns");
+        Integer a;
+        try{
+            a = w.getInt(p.getUniqueId().toString());
+        } catch (Exception ex){
+            w.createSection(p.getUniqueId().toString());
+            a = 0;
+            main.log("Failed to load warns for player... Setting value to 0.");
+        }
+        return a;
+    }
+
+    public Integer getMutes(Player p){
+        ConfigurationSection w = main.getConfig().getConfigurationSection("mutes");
+        Integer a;
+        try{
+            a = w.getInt(p.getUniqueId().toString());
+        } catch (Exception ex){
+            w.createSection(p.getUniqueId().toString());
+            a = 0;
+            main.log("Failed to load mutes for player... Setting value to 0.");
+        }
+        return a;
+    }
 
     //Constructor:
     public InventoryManager(Plugin p, Main m){
@@ -85,7 +112,7 @@ public class InventoryManager {
         ItemMeta im = i.getItemMeta();
         im.setDisplayName(ChatColor.RED + p.getName() + "'s warnings");
         List<String> l = new ArrayList<>();
-        l.add(ChatColor.DARK_AQUA + p.getName() + " got warned " + main.getWarns(p).toString() + " times!");
+        l.add(ChatColor.DARK_AQUA + p.getName() + " got warned " + getWarns(p).toString() + " times!");
         im.setLore(l);
         im.addItemFlags(ItemFlag.HIDE_PLACED_ON);
         i.setItemMeta(im);
@@ -103,7 +130,7 @@ public class InventoryManager {
         i = new ItemStack(Material.BARRIER, 1);
         im = i.getItemMeta();
         im.setDisplayName(ChatColor.RED + p.getName() + "'s mutes");
-        l.add(ChatColor.DARK_AQUA + p.getName() + " got muted " + main.getMutes(p) + " times!");
+        l.add(ChatColor.DARK_AQUA + p.getName() + " got muted " +getMutes(p) + " times!");
         im.setLore(l);
         im.addItemFlags(ItemFlag.HIDE_PLACED_ON);
         i.setItemMeta(im);

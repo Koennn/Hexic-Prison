@@ -4,12 +4,25 @@ import me.koenn.kp.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 public class Mute extends HexicCommand{
 
     private Main main;
 
+    public void addMute(Player p){
+        ConfigurationSection w = main.getConfig().getConfigurationSection("mutes");
+        Integer a;
+        try{
+            a = w.getInt(p.getUniqueId().toString());
+        } catch (Exception ex){
+            w.createSection(p.getUniqueId().toString());
+            a = 0;
+        }
+        w.set(p.getUniqueId().toString(), (a + 1));
+        main.saveConfig();
+    }
 
     @Override
     @SuppressWarnings("deprecation")
@@ -54,7 +67,7 @@ public class Mute extends HexicCommand{
                     Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player" + ChatColor.YELLOW + " " + ChatColor.BOLD + p.getName() + ChatColor.DARK_GRAY + " was unmuted by" + ChatColor.YELLOW + " " + ChatColor.BOLD + sender.getName());
                 } else {
                     main.mute.put(p, true);
-                    main.addMute(p);
+                    addMute(p);
                     Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "Player" + ChatColor.YELLOW + " " + ChatColor.BOLD + p.getName() + ChatColor.DARK_GRAY + " was muted by" + ChatColor.YELLOW + " " + ChatColor.BOLD + sender.getName());
                 }
             } else {

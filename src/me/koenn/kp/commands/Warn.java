@@ -4,6 +4,7 @@ import me.koenn.kp.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
@@ -11,6 +12,19 @@ import java.util.logging.Level;
 public class Warn extends HexicCommand {
 
     private Main main;
+
+    public void addWarning(Player p){
+        ConfigurationSection w = main.getConfig().getConfigurationSection("warns");
+        Integer a;
+        try{
+            a = w.getInt(p.getUniqueId().toString());
+        } catch (Exception ex){
+            w.createSection(p.getUniqueId().toString());
+            a = 0;
+        }
+        w.set(p.getUniqueId().toString(), (a + 1));
+        main.saveConfig();
+    }
 
     @SuppressWarnings("deprecation")
     public void onCommand(CommandSender sender, String[] args) {
@@ -23,7 +37,7 @@ public class Warn extends HexicCommand {
             }
             String message = sb.toString().trim();
             p.sendMessage(ChatColor.DARK_RED + "" + ChatColor.BOLD + "Warning from " + sender.getName() + ": " + message);
-            main.addWarning(p);
+            addWarning(p);
         } else {
             MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, super.getUsage());
         }
