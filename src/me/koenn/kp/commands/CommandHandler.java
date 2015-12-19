@@ -1,6 +1,9 @@
 package me.koenn.kp.commands;
 
+import me.koenn.kp.InventoryManager;
 import me.koenn.kp.Main;
+import me.koenn.kp.Ranks;
+import me.koenn.kp.Warping;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,7 +17,7 @@ public class CommandHandler implements CommandExecutor{
 
     private ArrayList<HexicCommand> cmds = new ArrayList<>();
 
-    public void setup(Main main){
+    public void setup(Main main, Ranks ranks, InventoryManager ivm, Warping warping){
         cmds.add(new Warn(main));
         cmds.add(new Adminmode(main));
         cmds.add(new Adminregister(main));
@@ -26,12 +29,18 @@ public class CommandHandler implements CommandExecutor{
         cmds.add(new Nick(main));
         cmds.add(new Relog(main));
         cmds.add(new Help(main));
-        cmds.add(new Ranks(main));
+        cmds.add(new Rankup(main, ranks));
+        cmds.add(new Setrank(main, ranks));
+        cmds.add(new Emoney(main));
+        cmds.add(new Bal(main));
+        cmds.add(new Pay(main));
+        cmds.add(new Warp(main, ivm));
+        cmds.add(new Setwarp(main, warping));
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
 
-        Bukkit.getLogger().log(Level.INFO, "Execute");
+        Bukkit.getLogger().log(Level.INFO, "Execute " + cmd.getName());
 
         HexicCommand c = getHexicCommand(cmd.getName());
 
@@ -43,7 +52,6 @@ public class CommandHandler implements CommandExecutor{
     }
 
     private HexicCommand getHexicCommand(String name){
-        Bukkit.getLogger().log(Level.INFO, "Get command");
         for(HexicCommand cmd: cmds){
             if(cmd.getClass().getSimpleName().equalsIgnoreCase(name))return cmd;
         }

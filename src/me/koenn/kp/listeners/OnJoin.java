@@ -1,6 +1,7 @@
 package me.koenn.kp.listeners;
 
 import me.koenn.kp.Main;
+import me.koenn.kp.Ranks;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,9 +15,11 @@ import static org.bukkit.ChatColor.translateAlternateColorCodes;
 public class OnJoin implements Listener{
 
     private Main main;
+    private Ranks ranks;
 
-    public OnJoin(Main main){
+    public OnJoin(Main main, Ranks ranks){
         this.main = main;
+        this.ranks = ranks;
     }
 
     @EventHandler
@@ -35,6 +38,7 @@ public class OnJoin implements Listener{
                 n = p.getName();
             }
             if(!e.getPlayer().hasPlayedBefore()) {
+                ranks.setRank(p, Ranks.PrisonRank.A);
                 for(int i = 0; i < 94; i++){
                     p.sendMessage("");
                 }

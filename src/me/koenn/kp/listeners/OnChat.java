@@ -1,6 +1,7 @@
 package me.koenn.kp.listeners;
 
 import me.koenn.kp.Main;
+import me.koenn.kp.Ranks;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -10,14 +11,19 @@ import org.bukkit.event.player.PlayerChatEvent;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
+import java.util.HashMap;
+
 import static org.bukkit.ChatColor.translateAlternateColorCodes;
 
 public class OnChat implements Listener {
 
     private Main main;
+    private Ranks ranks;
 
-    public OnChat(Main main) {
+
+    public OnChat(Main main, Ranks ranks) {
         this.main = main;
+        this.ranks = ranks;
     }
 
     public void sendMessage(Player o, Player p, String m, Boolean b, String mode){
@@ -29,7 +35,7 @@ public class OnChat implements Listener {
         if(user.getPrefix() == "") {
             prefix = translateAlternateColorCodes('&', "&8&l(&fDefault&8&l) ");
         }
-        String r = main.rank.get(p);
+        String r = ranks.getRank(p).toString();
         String n;
         if(main.getConfig().getConfigurationSection("nicknames").contains(p.getName())) {
             n = main.getConfig().getConfigurationSection("nicknames").getString(p.getName());
@@ -57,9 +63,6 @@ public class OnChat implements Listener {
             if (e.getMessage().equalsIgnoreCase(main.spam.get(p))) {
                 p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Spamming is not allowed!");
             } else {
-                if (main.nick.get(p) == null) {
-                    main.nick.put(p, p.getName());
-                }
                 if (main.mode.get(p) == null) {
                     main.mode.put(p, "server");
                 }
@@ -68,7 +71,7 @@ public class OnChat implements Listener {
                         sendMessage(o, p, e.getMessage(), true, "Normal");
                     } else {
                         if (o.getWorld().getName() == p.getWorld().getName()) {
-                            if(p.getWorld().getName().contains("Prison")){
+                            if(p.getWorld().getName().contains("world")){
                                 sendMessage(o, p, e.getMessage(), false, "Prison");
                             } else {
                                 sendMessage(o, p, e.getMessage(), false, "Normal");

@@ -12,3 +12,12 @@ mutes:
 
 nicknames:
   example: example
+
+rankprices:
+  enabled: true
+  A: 1000
+  B: 5000
+  C: 10000
+
+warps:
+  enabled: true

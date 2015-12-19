@@ -46,9 +46,28 @@ commands:
   warn:
     usage: /warn <player> <reason>
     description: Give a player a warning.
-  ranks:
-    usage: /ranks
-    description: See all the ranks
+  rankup:
+    usage: /rankup
+    description: Rankup.
+  setrank:
+    usage: /setrank <player> <rank>
+    description: Set a player's rank.
+  emoney:
+    usage: /emoney <add/remove/set> <player> <amount>
+    description: General economy command.
+  bal:
+    aliases: /balance
+    usage: /bal [player]
+    desctiption: Check your balance
+  pay:
+    usage: /pay <player> <amount>
+    description: Pay a player.
+  warp:
+    usage: /warp (warp)
+    description: Warp to places
+  setwarp:
+    usage: /setwarp <name> <item>
+    desctiption: Set a warp
 
 permissions:
   hexic.Dev:

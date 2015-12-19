@@ -1,6 +1,7 @@
 package me.koenn.kp.listeners;
 
 import me.koenn.kp.Main;
+import me.koenn.kp.Warping;
 import me.koenn.kp.commands.MessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,9 +22,11 @@ import java.util.List;
 public class OnInventoryClick implements Listener {
 
     private Main main;
+    private Warping warping;
 
-    public OnInventoryClick(Main main) {
+    public OnInventoryClick(Main main, Warping warping) {
         this.main = main;
+        this.warping = warping;
     }
 
     private ItemStack serverSelector() {
@@ -94,11 +97,15 @@ public class OnInventoryClick implements Listener {
                     e.setCancelled(true);
                     main.ShowServerInfo(p);
                 }
-                if(e.getInventory().getName().contains("Information about ")){
+                if(e.getInventory().getName().contains("Warps")){
+                    e.setCancelled(true);
+                    warping.click(e.getCurrentItem().getType(), p);
+                }
+                if(e.getInventory().getName().contains("Info about ")){
                     e.setCancelled(true);
                     if(e.getSlot() == 4){
                         p.teleport(main.ivm.history.get(p));
-                        MessageManager.getInstance().msg(e.getWhoClicked(), MessageManager.MessageType.WARN, "Teleporting to " + main.ivm.history.get(p).getName());
+                        MessageManager.getInstance().msg(e.getWhoClicked(), MessageManager.MessageType.INFO, "Teleporting to " + main.ivm.history.get(p).getName());
                     }
                 }
                 if (e.getInventory().getName().contains(main.ivm.getServerSelector())){

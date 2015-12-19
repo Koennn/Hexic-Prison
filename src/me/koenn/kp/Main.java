@@ -6,7 +6,6 @@ import me.koenn.kp.listeners.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,16 +23,16 @@ public class Main extends JavaPlugin{
 
     public InventoryManager ivm;
     public SettingsMenu settings;
+    public Warping warping;
 
     public HashMap<Player, Boolean> mute = new HashMap<>();
     public HashMap<Player, String> spam = new HashMap<>();
-    public HashMap<Player, String> rank = new HashMap<>();
-    public HashMap<Player, String> nick = new HashMap<>();
     public HashMap<Player, String> mode = new HashMap<>();
     public HashMap<UUID, String> admins = new HashMap<>();
     public ArrayList<Player> block = new ArrayList<>();
 
     public String textColor = ChatColor.GREEN + "";
+    public String titleColor = ChatColor.YELLOW + "" + ChatColor.BOLD;
     public String hexicTitle = ChatColor.GOLD + "" + ChatColor.BOLD;
 
     public File saveTo = new File(getDataFolder(), "CommandLog.txt");
@@ -59,12 +58,21 @@ public class Main extends JavaPlugin{
         }
     }
 
+    public void disablePlugin(String reason){
+        this.setEnabled(false);
+        log("Disabled due to " + reason);
+    }
+
     public void onEnable() {
         CommandHandler ch = new CommandHandler();
+        Ranks ranks = new Ranks(this);
+        this.warping = new Warping(this);
         this.ivm = new InventoryManager(this, this);
         this.settings = new SettingsMenu(this);
 
-        ch.setup(this);
+        ConfigManager.getInstance().setup(this, this);
+
+        ch.setup(this, ranks, ivm, warping);
         getCommand("warn").setExecutor(ch);
         getCommand("adminmode").setExecutor(ch);
         getCommand("adminregister").setExecutor(ch);
@@ -76,29 +84,30 @@ public class Main extends JavaPlugin{
         getCommand("nick").setExecutor(ch);
         getCommand("relog").setExecutor(ch);
         getCommand("help").setExecutor(ch);
-        getCommand("ranks").setExecutor(ch);
+        getCommand("rankup").setExecutor(ch);
+        getCommand("setrank").setExecutor(ch);
+        getCommand("emoney").setExecutor(ch);
+        getCommand("bal").setExecutor(ch);
+        getCommand("pay").setExecutor(ch);
+        getCommand("warp").setExecutor(ch);
+        getCommand("setwarp").setExecutor(ch);
 
         Bukkit.getServer().getPluginManager().registerEvents(settings, this);
         Bukkit.getServer().getPluginManager().registerEvents(new Lapis(), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new OnJoin(this), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new OnJoin(this, ranks), this);
         Bukkit.getServer().getPluginManager().registerEvents(new OnFlight(this), this);
         Bukkit.getServer().getPluginManager().registerEvents(new OnBlockBreak(this), this);
         Bukkit.getServer().getPluginManager().registerEvents(new OnDeath(this), this);
         Bukkit.getServer().getPluginManager().registerEvents(new OnAnyMove(this), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new OnChat(this), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new OnChat(this, ranks), this);
         Bukkit.getServer().getPluginManager().registerEvents(new CommandPreprocess(this), this);
         Bukkit.getServer().getPluginManager().registerEvents(new OnRightclick(this), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new OnInventoryClick(this), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new OnInventoryClick(this, warping), this);
         Bukkit.getServer().getPluginManager().registerEvents(new OnItemDrop(this), this);
         Bukkit.getServer().getPluginManager().registerEvents(new OnLeave(this), this);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> Bukkit.broadcastMessage(hexicTitle + hexicTitle + "[Hexic] " + textColor + "If you find any bugs, use /report to report a bug."), 1, 8400);
         Bukkit.broadcastMessage(ChatColor.BLUE + "[Broadcast] " + ChatColor.DARK_RED + "" + ChatColor.BOLD + "Loading additional resources...");
-
-        if(!(getDataFolder().exists())) {
-            getConfig().options().copyDefaults(true);
-            saveConfig();
-        }
     }
 
     public void log(String s){

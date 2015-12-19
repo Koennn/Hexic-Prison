@@ -14,12 +14,14 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 public class InventoryManager {
 
     //Variables:
     private Inventory serverSelectorInventory;
-    private Inventory playerInfo;
+    Inventory playerInfo;
+    private Inventory warps;
 
     public HashMap<Player, Player> history = new HashMap<>();
     public ArrayList<Player> h = new ArrayList<>();
@@ -29,9 +31,6 @@ public class InventoryManager {
     private Plugin plugin;
     private Main main;
 
-    public String getInfoThingy(){
-        return playerInfo.getName();
-    }
     public String getServerSelector(){
         return serverSelectorInventory.getName();
     }
@@ -84,6 +83,8 @@ public class InventoryManager {
             index++;
         }
         serverSelectorInventory.setItem(1, setData(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "Prison", ChatColor.GRAY + "Click to go to the Prison server", prison));
+
+        this.warps = Bukkit.createInventory(null, 27, "Warps");
     }
 
     private ItemStack setData(String n, String l, ItemStack i){
@@ -137,5 +138,32 @@ public class InventoryManager {
         playerInfo.setItem(6, i);
         l.clear();
         return playerInfo;
+    }
+
+    private void initWarps(){
+        this.warps.clear();
+        ConfigurationSection warps = main.getConfig().getConfigurationSection("warps");
+        ArrayList<ItemStack> allwarps = new ArrayList<>();
+        if(warps.get("enabled").toString().equalsIgnoreCase("true")){
+            warps.getKeys(false).stream().filter(x -> !(x.contains("enabled"))).forEach(x -> {
+                ItemStack it = new ItemStack(Material.valueOf(x));
+                ItemMeta im = it.getItemMeta();
+                im.setDisplayName(main.titleColor + warps.getConfigurationSection(x).get("name").toString());
+                List<String> l = new ArrayList<>();
+                l.add(main.textColor + "Click to warp to " + warps.getConfigurationSection(x).get("name").toString());
+                im.setLore(l);
+                it.setItemMeta(im);
+                allwarps.add(it);
+            });
+            allwarps.forEach(this.warps::addItem);
+        } else {
+            main.log("Warps are disabled in config");
+        }
+    }
+
+    public void openWarps(Player p){
+        initWarps();
+        p.closeInventory();
+        p.openInventory(warps);
     }
 }
