@@ -1,29 +1,37 @@
 package me.koenn.kp.listeners;
 
+import com.avaje.ebeaninternal.server.cluster.mcast.Message;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import me.koenn.kp.Cells;
 import me.koenn.kp.Main;
+import me.koenn.kp.Money;
 import me.koenn.kp.commands.MessageManager;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class OnRightclick implements Listener {
 
     private Main main;
+    private Money money;
 
-    public OnRightclick(Main main) {
+    public OnRightclick(Main main, Money money) {
         this.main = main;
+        this.money = money;
     }
 
     private ItemStack serverSelector() {
@@ -80,6 +88,31 @@ public class OnRightclick implements Listener {
             if(p.getInventory().getItemInHand().equals(serverInfo())) {
                 e.setCancelled(true);
                 main.ShowServerInfo(p);
+            }
+            if(e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.WALL_SIGN){
+                main.log("Click");
+                Cells cells = new Cells(main, money);
+                cells.clickSign(e.getClickedBlock(), p);
+            }
+            Location loc = e.getClickedBlock().getLocation();
+            Vector v = new Vector(loc.getX(), loc.getBlockY(), loc.getZ());
+            ApplicableRegionSet set = main.wg.getRegionManager(loc.getWorld()).getApplicableRegions(v);
+            Iterator<ProtectedRegion> iter = set.iterator();
+            ProtectedRegion region = null;
+            while(iter.hasNext()) {
+                ProtectedRegion nextRegion = iter.next();
+                if(region == null || region.getPriority() > region.getPriority()) region = nextRegion;
+            }
+            try{
+                region.getId();
+            } catch (Exception ex){
+                return;
+            }
+            if(region.getId().contains("cell") && !region.getMembers().contains(p.getUniqueId())){
+                if(!p.isOp()){
+                    e.setCancelled(true);
+                    MessageManager.getInstance().msg(p, MessageManager.MessageType.WARN, "This is not your cell!");
+                }
             }
         } catch (Exception ex) {
             main.catchEvent(ex, e.getPlayer(), e.getEventName());

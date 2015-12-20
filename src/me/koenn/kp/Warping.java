@@ -24,7 +24,9 @@ public class Warping {
             Double x = warps.getConfigurationSection(warp.toString()).getDouble("x");
             Double y = warps.getConfigurationSection(warp.toString()).getDouble("y");
             Double z = warps.getConfigurationSection(warp.toString()).getDouble("z");
-            p.teleport(new Location(world, x, y, z));
+            float yaw = warps.getConfigurationSection(warp.toString()).getLong("yaw");
+            float pitch = warps.getConfigurationSection(warp.toString()).getLong("pitch");
+            p.teleport(new Location(world, x, y, z, yaw, pitch));
             MessageManager.getInstance().msg(p, MessageManager.MessageType.INFO, "Warping to " + warps.getConfigurationSection(warp.toString()).get("name"));
         }catch (Exception e){
             MessageManager.getInstance().msg(p, MessageManager.MessageType.WARN, "This warp does not exist!");
@@ -47,6 +49,9 @@ public class Warping {
         s.set("x", p.getLocation().getX());
         s.set("y", p.getLocation().getY());
         s.set("z", p.getLocation().getZ());
+        s.set("yaw", p.getLocation().getYaw());
+        s.set("pitch", p.getLocation().getPitch());
         MessageManager.getInstance().msg(p, MessageManager.MessageType.INFO, "Warp " + name + " set.");
+        main.saveConfig();
     }
 }

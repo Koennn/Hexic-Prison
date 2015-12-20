@@ -1,6 +1,5 @@
 package me.koenn.kp;
 
-import me.koenn.kp.commands.MessageManager;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -17,7 +16,7 @@ public class ConfigManager {
 
     private Main main;
 
-    private FileConfiguration data;
+    public FileConfiguration data;
     private File datafile;
 
     public void setup(Plugin p, Main main){
@@ -34,7 +33,7 @@ public class ConfigManager {
         if (!datafile.exists()) {
             try { datafile.createNewFile(); }
             catch (Exception e) {
-                main.log(" [ERROR] Failed to create data file, disabling plugin...");
+                main.log("[ERROR] Failed to create data file, disabling plugin...");
                 main.disablePlugin(e.toString());
             }
         }
@@ -47,7 +46,7 @@ public class ConfigManager {
         try {
             return (T) data.get(path);
         }catch (Exception e){
-            main.log(" [ERROR] Unable to load data, please contact Koenn.");
+            main.log("[ERROR] Unable to load data, please contact Koenn.");
             return null;
         }
     }
@@ -57,7 +56,7 @@ public class ConfigManager {
         try {
             return (T) main.getConfig().get(path);
         }catch (Exception e){
-            main.log(" [ERROR] Unable to load from config, please contact Koenn.");
+            main.log("[ERROR] Unable to load from config, please contact Koenn.");
             return null;
         }
     }
@@ -66,7 +65,7 @@ public class ConfigManager {
         try {
             return Integer.parseInt(data.get(path).toString());
         }catch (Exception e){
-            main.log(" [ERROR] Unable to load data, please contact Koenn.");
+            main.log("[ERROR] Unable to load data, please contact Koenn.");
             return null;
         }
     }
@@ -75,7 +74,7 @@ public class ConfigManager {
         data.set(path, value);
         try { data.save(datafile); }
         catch (Exception e) {
-            main.log(" [ERROR] Unable to save data, please contact Koenn.");
+            main.log("[ERROR] Unable to save data, please contact Koenn.");
         }
     }
 

@@ -1,5 +1,5 @@
 main: me.koenn.kp.Main
-name: Hexic Prison
+name: HexicPrison
 description: Hexic Prison Plugin
 author: Koenn
 version: 1.0
@@ -68,6 +68,9 @@ commands:
   setwarp:
     usage: /setwarp <name> <item>
     desctiption: Set a warp
+  unrent:
+    usage: /unrent
+    desctiption: Unrent your cell.
 
 permissions:
   hexic.Dev:

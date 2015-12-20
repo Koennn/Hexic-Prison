@@ -12,6 +12,10 @@ public class Setwarp extends HexicCommand {
     private Warping warping;
 
     public void onCommand(CommandSender sender, String[] args) {
+        if(args.length != 2){
+            MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, super.getUsage());
+            return;
+        }
         if(!(sender instanceof Player)){
             MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, "You need to be a player to do this!");
             return;

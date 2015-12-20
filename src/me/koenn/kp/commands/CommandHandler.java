@@ -36,6 +36,7 @@ public class CommandHandler implements CommandExecutor{
         cmds.add(new Pay(main));
         cmds.add(new Warp(main, ivm));
         cmds.add(new Setwarp(main, warping));
+        cmds.add(new Unrent(main));
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){

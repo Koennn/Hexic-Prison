@@ -1,5 +1,6 @@
 package me.koenn.kp;
 
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import me.koenn.kp.commands.CommandHandler;
 import me.koenn.kp.commands.MessageManager;
 import me.koenn.kp.listeners.*;
@@ -7,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -37,6 +40,8 @@ public class Main extends JavaPlugin{
 
     public File saveTo = new File(getDataFolder(), "CommandLog.txt");
 
+    public static WorldGuardPlugin wg = null;
+
     public void log(String msg, String player){
         try{
             Date now = new Date();
@@ -64,6 +69,9 @@ public class Main extends JavaPlugin{
     }
 
     public void onEnable() {
+        this.wg = getWorldGuard();
+
+        Money money = new Money(this);
         CommandHandler ch = new CommandHandler();
         Ranks ranks = new Ranks(this);
         this.warping = new Warping(this);
@@ -91,23 +99,37 @@ public class Main extends JavaPlugin{
         getCommand("pay").setExecutor(ch);
         getCommand("warp").setExecutor(ch);
         getCommand("setwarp").setExecutor(ch);
+        getCommand("unrent").setExecutor(ch);
 
-        Bukkit.getServer().getPluginManager().registerEvents(settings, this);
-        Bukkit.getServer().getPluginManager().registerEvents(new Lapis(), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new OnJoin(this, ranks), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new OnFlight(this), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new OnBlockBreak(this), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new OnDeath(this), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new OnAnyMove(this), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new OnChat(this, ranks), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new CommandPreprocess(this), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new OnRightclick(this), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new OnInventoryClick(this, warping), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new OnItemDrop(this), this);
-        Bukkit.getServer().getPluginManager().registerEvents(new OnLeave(this), this);
+        PluginManager pm = Bukkit.getServer().getPluginManager();
+
+        pm.registerEvents(settings, this);
+        pm.registerEvents(new Lapis(), this);
+        pm.registerEvents(new OnJoin(this, ranks), this);
+        pm.registerEvents(new OnFlight(this), this);
+        pm.registerEvents(new OnBlockBreak(this), this);
+        pm.registerEvents(new OnDeath(this), this);
+        pm.registerEvents(new OnAnyMove(this, this), this);
+        pm.registerEvents(new OnChat(this, ranks), this);
+        pm.registerEvents(new CommandPreprocess(this), this);
+        pm.registerEvents(new OnRightclick(this, money), this);
+        pm.registerEvents(new OnInventoryClick(this, warping), this);
+        pm.registerEvents(new OnItemDrop(this), this);
+        pm.registerEvents(new OnLeave(this), this);
+        pm.registerEvents(new OnSignChange(this), this);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> Bukkit.broadcastMessage(hexicTitle + hexicTitle + "[Hexic] " + textColor + "If you find any bugs, use /report to report a bug."), 1, 8400);
         Bukkit.broadcastMessage(ChatColor.BLUE + "[Broadcast] " + ChatColor.DARK_RED + "" + ChatColor.BOLD + "Loading additional resources...");
+    }
+
+    private WorldGuardPlugin getWorldGuard() {
+        Plugin w = getServer().getPluginManager().getPlugin("WorldGuard");
+        if ((w == null) || (!(w instanceof WorldGuardPlugin))) {
+            disablePlugin("Failed to hook into WorldGuard");
+            return null;
+        }
+        log("Successfully hooked into WorldGuard");
+        return (WorldGuardPlugin)w;
     }
 
     public void log(String s){
