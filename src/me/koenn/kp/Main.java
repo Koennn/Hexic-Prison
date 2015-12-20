@@ -1,7 +1,5 @@
 package me.koenn.kp;
 
-import com.huskehhh.mysql.mysql.MySQL;
-import java.sql.Connection;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import me.koenn.kp.commands.CommandHandler;
 import me.koenn.kp.commands.MessageManager;
@@ -26,26 +24,19 @@ import java.util.logging.Level;
 
 public class Main extends JavaPlugin{
 
+    public static WorldGuardPlugin wg = null;
     public InventoryManager ivm;
     public SettingsMenu settings;
     public Warping warping;
-
     public HashMap<Player, Boolean> mute = new HashMap<>();
     public HashMap<Player, String> spam = new HashMap<>();
     public HashMap<Player, String> mode = new HashMap<>();
     public HashMap<UUID, String> admins = new HashMap<>();
     public ArrayList<Player> block = new ArrayList<>();
-
     public String textColor = ChatColor.GREEN + "";
     public String titleColor = ChatColor.YELLOW + "" + ChatColor.BOLD;
     public String hexicTitle = ChatColor.GOLD + "" + ChatColor.BOLD;
-
     public File saveTo = new File(getDataFolder(), "CommandLog.txt");
-
-    public static WorldGuardPlugin wg = null;
-
-    public Connection c = null;
-    public MySQL MySQL;
 
     public void log(String msg, String player){
         try{
@@ -74,7 +65,7 @@ public class Main extends JavaPlugin{
     }
 
     public void onEnable() {
-        this.wg = getWorldGuard();
+        wg = getWorldGuard();
 
         Money money = new Money(this);
         CommandHandler ch = new CommandHandler();

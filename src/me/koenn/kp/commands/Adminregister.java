@@ -4,13 +4,15 @@ import me.koenn.kp.Main;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.sql.SQLException;
-import java.sql.Statement;
-
 public class Adminregister extends HexicCommand {
 
     private Main main;
 
+
+    public Adminregister(Main main) {
+        super("Register as an admin", "/adminregister <password>", "");
+        this.main = main;
+    }
 
     @Override
     public void onCommand(CommandSender sender, String[] args) {
@@ -28,10 +30,5 @@ public class Adminregister extends HexicCommand {
         } else {
             MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, "Please specify a password!");
         }
-    }
-
-    public Adminregister(Main main) {
-        super("Register as an admin", "/adminregister <password>", "");
-        this.main = main;
     }
 }
