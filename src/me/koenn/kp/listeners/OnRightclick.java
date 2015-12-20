@@ -1,6 +1,5 @@
 package me.koenn.kp.listeners;
 
-import com.avaje.ebeaninternal.server.cluster.mcast.Message;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -15,6 +14,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -89,29 +89,33 @@ public class OnRightclick implements Listener {
                 e.setCancelled(true);
                 main.ShowServerInfo(p);
             }
-            if(e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.WALL_SIGN){
-                main.log("Click");
-                Cells cells = new Cells(main, money);
-                cells.clickSign(e.getClickedBlock(), p);
+            if(e.getAction() == Action.RIGHT_CLICK_BLOCK){
+                if(e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.WALL_SIGN){
+                    main.log("Click");
+                    Cells cells = new Cells(main, money);
+                    cells.clickSign(e.getClickedBlock(), p);
+                }
             }
-            Location loc = e.getClickedBlock().getLocation();
-            Vector v = new Vector(loc.getX(), loc.getBlockY(), loc.getZ());
-            ApplicableRegionSet set = main.wg.getRegionManager(loc.getWorld()).getApplicableRegions(v);
-            Iterator<ProtectedRegion> iter = set.iterator();
-            ProtectedRegion region = null;
-            while(iter.hasNext()) {
-                ProtectedRegion nextRegion = iter.next();
-                if(region == null || region.getPriority() > region.getPriority()) region = nextRegion;
-            }
-            try{
-                region.getId();
-            } catch (Exception ex){
-                return;
-            }
-            if(region.getId().contains("cell") && !region.getMembers().contains(p.getUniqueId())){
-                if(!p.isOp()){
-                    e.setCancelled(true);
-                    MessageManager.getInstance().msg(p, MessageManager.MessageType.WARN, "This is not your cell!");
+            if(e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_BLOCK){
+                Location loc = e.getClickedBlock().getLocation();
+                Vector v = new Vector(loc.getX(), loc.getBlockY(), loc.getZ());
+                ApplicableRegionSet set = main.wg.getRegionManager(loc.getWorld()).getApplicableRegions(v);
+                Iterator<ProtectedRegion> iter = set.iterator();
+                ProtectedRegion region = null;
+                while(iter.hasNext()) {
+                    ProtectedRegion nextRegion = iter.next();
+                    if(region == null || region.getPriority() > region.getPriority()) region = nextRegion;
+                }
+                try{
+                    region.getId();
+                } catch (Exception ex){
+                    return;
+                }
+                if(region.getId().contains("cell") && !region.getMembers().contains(p.getUniqueId())){
+                    if(!p.isOp()){
+                        e.setCancelled(true);
+                        MessageManager.getInstance().msg(p, MessageManager.MessageType.WARN, "This is not your cell!");
+                    }
                 }
             }
         } catch (Exception ex) {

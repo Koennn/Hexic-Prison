@@ -1,5 +1,7 @@
 package me.koenn.kp;
 
+import com.huskehhh.mysql.mysql.MySQL;
+import java.sql.Connection;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import me.koenn.kp.commands.CommandHandler;
 import me.koenn.kp.commands.MessageManager;
@@ -41,6 +43,9 @@ public class Main extends JavaPlugin{
     public File saveTo = new File(getDataFolder(), "CommandLog.txt");
 
     public static WorldGuardPlugin wg = null;
+
+    public Connection c = null;
+    public MySQL MySQL;
 
     public void log(String msg, String player){
         try{

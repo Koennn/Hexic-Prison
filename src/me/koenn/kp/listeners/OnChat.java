@@ -11,8 +11,6 @@ import org.bukkit.event.player.PlayerChatEvent;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-import java.util.HashMap;
-
 import static org.bukkit.ChatColor.translateAlternateColorCodes;
 
 public class OnChat implements Listener {

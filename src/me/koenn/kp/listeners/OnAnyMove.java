@@ -1,13 +1,14 @@
 package me.koenn.kp.listeners;
 
-import com.connorlinfoot.actionbarapi.ActionBarAPI;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import me.koenn.kp.Main;
 import me.koenn.kp.commands.MessageManager;
-import org.bukkit.*;
-import org.bukkit.block.Sign;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

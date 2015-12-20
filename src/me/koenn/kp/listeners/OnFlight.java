@@ -1,12 +1,9 @@
 package me.koenn.kp.listeners;
 
 import me.koenn.kp.Main;
-import me.koenn.kp.commands.MessageManager;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 
 public class OnFlight implements Listener {

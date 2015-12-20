@@ -14,5 +14,7 @@
     <orderEntry type="library" name="votifier-1.9" level="project" />
     <orderEntry type="library" name="worldguard-6.1" level="project" />
     <orderEntry type="library" name="worldedit-bukkit-6.1" level="project" />
+    <orderEntry type="library" name="src1" level="project" />
+    <orderEntry type="module" module-name="MySQL-master" />
   </component>
 </module>
