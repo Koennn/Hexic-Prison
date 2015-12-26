@@ -15,5 +15,6 @@
     <orderEntry type="library" name="worldguard-6.1" level="project" />
     <orderEntry type="library" name="worldedit-bukkit-6.1" level="project" />
     <orderEntry type="library" name="src1" level="project" />
+    <orderEntry type="library" name="Essentials" level="project" />
   </component>
 </module>

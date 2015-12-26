@@ -2,11 +2,14 @@ package me.koenn.kp.listeners;
 
 import me.koenn.kp.Main;
 import me.koenn.kp.commands.MessageManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+
+import static org.bukkit.ChatColor.translateAlternateColorCodes;
 
 public class CommandPreprocess implements Listener {
 
@@ -32,6 +35,12 @@ public class CommandPreprocess implements Listener {
             }
             if(p.isOp()){
                 main.log(e.getMessage(), p.getName());
+            }
+            if (e.getMessage().contains("reload")) {
+                Bukkit.broadcastMessage(translateAlternateColorCodes('&', "&9&l[Broadcast] &4&lReloading the server... Prepare for lag!"));
+            }
+            if (e.getMessage().contains("buy")) {
+                e.setMessage("shop");
             }
         } catch (Exception ex) {
             main.catchEvent(ex, e.getPlayer(), e.getEventName());

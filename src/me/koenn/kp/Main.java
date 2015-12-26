@@ -24,6 +24,8 @@ import java.util.logging.Level;
 
 public class Main extends JavaPlugin{
 
+    public static Main main;
+
     public static WorldGuardPlugin wg = null;
     public InventoryManager ivm;
     public SettingsMenu settings;
@@ -37,6 +39,10 @@ public class Main extends JavaPlugin{
     public String titleColor = ChatColor.YELLOW + "" + ChatColor.BOLD;
     public String hexicTitle = ChatColor.GOLD + "" + ChatColor.BOLD;
     public File saveTo = new File(getDataFolder(), "CommandLog.txt");
+
+    public static Main getInstance() {
+        return main;
+    }
 
     public void log(String msg, String player){
         try{
@@ -67,6 +73,7 @@ public class Main extends JavaPlugin{
     public void onEnable() {
         wg = getWorldGuard();
 
+        main = this;
         Money money = new Money(this);
         CommandHandler ch = new CommandHandler();
         Ranks ranks = new Ranks(this);

@@ -71,6 +71,9 @@ commands:
   unrent:
     usage: /unrent
     desctiption: Unrent your cell.
+  kit:
+    usage: /kit
+    description: Get a kit.
 
 permissions:
   hexic.Dev:

@@ -5,12 +5,18 @@ import org.bukkit.entity.Player;
 
 public class Money {
 
+    private static Money money;
     private Main main;
     private ConfigManager cm;
 
     public Money(Main main){
         this.main = main;
         this.cm = ConfigManager.getInstance();
+        money = this;
+    }
+
+    public static Money getInstance() {
+        return money;
     }
 
     public Integer getBalance(Player p){

@@ -22,12 +22,12 @@ import java.util.Iterator;
 
 public class OnAnyMove implements Listener {
 
+    private static Integer time;
     private Main main;
     private Plugin plugin;
-
-    private static Integer time;
     private Integer taskID1;
     private Integer taskID2;
+
 
     public OnAnyMove(Main main, Plugin plugin) {
         this.main = main;
@@ -41,13 +41,13 @@ public class OnAnyMove implements Listener {
             if(p.getWorld().getName().contains("Hub")){
                 if(p.getGameMode() != GameMode.ADVENTURE && !(main.admins.containsKey(p.getUniqueId()))){
                     p.setGameMode(GameMode.ADVENTURE);
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1000000, 4, true, false));
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 2, true, false));
                 }
+                p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1000000, 4, true, false));
+                p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, 2, true, false));
             }
             Location loc = p.getLocation();
             Vector v = new Vector(loc.getX(), loc.getBlockY(), loc.getZ());
-            ApplicableRegionSet set = main.wg.getRegionManager(loc.getWorld()).getApplicableRegions(v);
+            ApplicableRegionSet set = Main.wg.getRegionManager(loc.getWorld()).getApplicableRegions(v);
             Iterator<ProtectedRegion> iter = set.iterator();
             ProtectedRegion region = null;
             while(iter.hasNext()) {
