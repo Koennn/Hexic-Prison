@@ -10,6 +10,11 @@ public class History extends HexicCommand {
     private Main main;
 
 
+    public History(Main main) {
+        super("Get information about a player", "/history <player>", "his");
+        this.main = main;
+    }
+
     @Override
     @SuppressWarnings("deprecation")
     public void onCommand(CommandSender sender, String[] args) {
@@ -21,10 +26,5 @@ public class History extends HexicCommand {
         } else {
             MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, super.getUsage());
         }
-    }
-
-    public History(Main main) {
-        super("Get information about a player", "/history <player>", "his");
-        this.main = main;
     }
 }

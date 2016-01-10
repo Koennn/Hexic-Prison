@@ -11,15 +11,20 @@ public class Relog extends HexicCommand {
     private Main main;
 
 
+    public Relog(Main main) {
+        super("Force a player to relog", "/relog <player>", "");
+        this.main = main;
+    }
+
     @Override
     @SuppressWarnings("deprecation")
     public void onCommand(CommandSender sender, String[] args) {
-        if(args.length < 1){
+        if (args.length < 1) {
             MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, super.getUsage());
             return;
         }
-        if(args[0].equalsIgnoreCase("all")){
-            for(Player p : Bukkit.getServer().getOnlinePlayers()){
+        if (args[0].equalsIgnoreCase("all")) {
+            for (Player p : Bukkit.getServer().getOnlinePlayers()) {
                 p.kickPlayer(ChatColor.BLUE + "" + ChatColor.BOLD + "Please relog!");
             }
         } else {
@@ -31,10 +36,5 @@ public class Relog extends HexicCommand {
                 MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, super.getUsage());
             }
         }
-    }
-
-    public Relog(Main main) {
-        super("Force a player to relog", "/relog <player>", "");
-        this.main = main;
     }
 }

@@ -15,24 +15,24 @@ public class Cells {
     private Main main;
     private Money money;
 
-    public Cells(Main main, Money money){
+    public Cells(Main main, Money money) {
         cm = ConfigManager.getInstance();
         this.main = main;
         this.money = money;
     }
 
     public void clickSign(Block b, Player p) {
-        if(b.getType() == Material.WALL_SIGN){
+        if (b.getType() == Material.WALL_SIGN) {
             Sign sign = (Sign) b.getState();
-            if(sign.getLine(0).contains(ChatColor.DARK_BLUE + "[Cell]")){
+            if (sign.getLine(0).contains(ChatColor.DARK_BLUE + "[Cell]")) {
                 String name = sign.getLine(1).toLowerCase();
                 ConfigurationSection ws = main.getConfig().getConfigurationSection(name);
-                if(ws.getBoolean("setup")){
-                    if(ws.get("owner") != "null"){
+                if (ws.getBoolean("setup")) {
+                    if (ws.get("owner") != "null") {
                         MessageManager.getInstance().msg(p, MessageManager.MessageType.WARN, "This cell is already rented");
                         return;
                     }
-                    if(money.removeFrom(p, 500)){
+                    if (money.removeFrom(p, 500)) {
                         MessageManager.getInstance().msg(p, MessageManager.MessageType.INFO, "You rented " + sign.getLine(1) + " for $500 every day");
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "rg addmember " + name + " -w " + p.getWorld().getName() + " " + p.getName());
                         ws.set("owner", p.getUniqueId().toString());
@@ -44,7 +44,7 @@ public class Cells {
                     }
                     return;
                 }
-                if(p.isOp()){
+                if (p.isOp()) {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "rg flag " + sign.getLine(1) + " -w " + p.getWorld().getName() + " build deny");
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "rg flag " + sign.getLine(1) + " -w " + p.getWorld().getName() + " block-break deny");
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "rg flag " + sign.getLine(1) + " -w " + p.getWorld().getName() + " chest-access allow");

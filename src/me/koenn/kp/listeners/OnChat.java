@@ -24,18 +24,18 @@ public class OnChat implements Listener {
         this.ranks = ranks;
     }
 
-    public void sendMessage(Player o, Player p, String m, Boolean b, String mode){
-        if(!(p.getName().contains("Koenn")) && !(p.getName().contains("fredsandford007")) && !(p.getName().contains("Shenz"))){
+    public void sendMessage(Player o, Player p, String m, Boolean b, String mode) {
+        if (!(p.getName().contains("Koenn")) && !(p.getName().contains("fredsandford007")) && !(p.getName().contains("Shenz"))) {
             m = m.toLowerCase();
         }
         PermissionUser user = PermissionsEx.getUser(p);
         String prefix = translateAlternateColorCodes('&', user.getPrefix());
-        if(user.getPrefix() == "") {
+        if (user.getPrefix() == "") {
             prefix = translateAlternateColorCodes('&', "&8&l(&fDefault&8&l) ");
         }
         String r = ranks.getRank(p).toString();
         String n;
-        if(main.getConfig().getConfigurationSection("nicknames").contains(p.getName())) {
+        if (main.getConfig().getConfigurationSection("nicknames").contains(p.getName())) {
             n = main.getConfig().getConfigurationSection("nicknames").getString(p.getName());
         } else {
             n = p.getName();
@@ -43,10 +43,10 @@ public class OnChat implements Listener {
         if (b) {
             o.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.YELLOW + p.getWorld().getName() + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "" + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE + m);
         } else {
-            if(mode == "Prison"){
-                    o.sendMessage(prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.GREEN + r + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE + m);
+            if (mode == "Prison") {
+                o.sendMessage(prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "(" + ChatColor.GREEN + r + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ") " + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE + m);
             } else {
-                    o.sendMessage(prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "" + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE + m);
+                o.sendMessage(prefix + ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "" + ChatColor.GRAY + "" + n + ": " + ChatColor.WHITE + m);
             }
         }
     }
@@ -69,7 +69,7 @@ public class OnChat implements Listener {
                         sendMessage(o, p, e.getMessage(), true, "Normal");
                     } else {
                         if (o.getWorld().getName() == p.getWorld().getName()) {
-                            if(p.getWorld().getName().contains("world")){
+                            if (p.getWorld().getName().contains("world")) {
                                 sendMessage(o, p, e.getMessage(), false, "Prison");
                             } else {
                                 sendMessage(o, p, e.getMessage(), false, "Normal");

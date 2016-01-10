@@ -41,7 +41,7 @@ public class OnInventoryClick implements Listener {
         return i;
     }
 
-    private ItemStack helpMenu(){
+    private ItemStack helpMenu() {
         ItemStack i = new ItemStack(Material.DIAMOND);
         ItemMeta im = i.getItemMeta();
         im.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Help Menu");
@@ -54,7 +54,7 @@ public class OnInventoryClick implements Listener {
         return i;
     }
 
-    private ItemStack serverInfo(){
+    private ItemStack serverInfo() {
         ItemStack i = new ItemStack(Material.EMERALD);
         ItemMeta im = i.getItemMeta();
         im.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Server Info");
@@ -71,45 +71,45 @@ public class OnInventoryClick implements Listener {
     public void onInventoryClick(InventoryClickEvent e) {
         try {
             Player p = (Player) e.getWhoClicked();
-            if(!(e.getCurrentItem() == (null) && !(e.getCursor() == (null)))){
-                if (e.getCurrentItem().equals(serverSelector())){
+            if (!(e.getCurrentItem() == (null) && !(e.getCursor() == (null)))) {
+                if (e.getCurrentItem().equals(serverSelector())) {
                     main.ivm.openServerSelector(p);
                     e.setCancelled(true);
                 }
-                if (e.getCursor().equals(serverSelector())){
+                if (e.getCursor().equals(serverSelector())) {
                     main.ivm.openServerSelector(p);
                     e.setCancelled(true);
                 }
-                if(e.getCurrentItem().equals(helpMenu())){
+                if (e.getCurrentItem().equals(helpMenu())) {
                     e.setCancelled(true);
                     p.performCommand("help");
                 }
-                if(e.getCurrentItem().equals(helpMenu())){
+                if (e.getCurrentItem().equals(helpMenu())) {
                     e.setCancelled(true);
                     p.performCommand("help");
                 }
-                if(e.getCurrentItem().equals(serverInfo())) {
+                if (e.getCurrentItem().equals(serverInfo())) {
                     e.setCancelled(true);
                     main.ShowServerInfo(p);
                 }
-                if(e.getCursor().equals(serverInfo())) {
+                if (e.getCursor().equals(serverInfo())) {
                     e.setCancelled(true);
                     main.ShowServerInfo(p);
                 }
-                if(e.getInventory().getName().contains("Warps")){
+                if (e.getInventory().getName().contains("Warps")) {
                     e.setCancelled(true);
                     warping.click(e.getCurrentItem().getType(), p);
                 }
-                if(e.getInventory().getName().contains("Info about ")){
+                if (e.getInventory().getName().contains("Info about ")) {
                     e.setCancelled(true);
-                    if(e.getSlot() == 4){
+                    if (e.getSlot() == 4) {
                         p.teleport(main.ivm.history.get(p));
                         MessageManager.getInstance().msg(e.getWhoClicked(), MessageManager.MessageType.INFO, "Teleporting to " + main.ivm.history.get(p).getName());
                     }
                 }
-                if (e.getInventory().getName().contains(main.ivm.getServerSelector())){
+                if (e.getInventory().getName().contains(main.ivm.getServerSelector())) {
                     e.setCancelled(true);
-                    switch(e.getSlot()){
+                    switch (e.getSlot()) {
                         case 0:
                             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Hub");
                             break;
@@ -117,21 +117,21 @@ public class OnInventoryClick implements Listener {
                             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Prison");
                             break;
                         case 2:
-                            if((p.isOp())) {
+                            if ((p.isOp())) {
                                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Minigames");
                             } else {
                                 p.sendMessage(ChatColor.RED + "This server is not open yet!");
                             }
                             break;
                         case 3:
-                            if((p.isOp())) {
+                            if ((p.isOp())) {
                                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Skyblock");
                             } else {
                                 p.sendMessage(ChatColor.RED + "This server is not open yet!");
                             }
                             break;
                         case 4:
-                            if((p.isOp())) {
+                            if ((p.isOp())) {
                                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "gotoserver " + p.getName() + " Factions");
                             } else {
                                 p.sendMessage(ChatColor.RED + "This server is not open yet!");

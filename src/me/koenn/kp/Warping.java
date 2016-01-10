@@ -12,14 +12,14 @@ public class Warping {
 
     private Main main;
 
-    public Warping(Main main){
+    public Warping(Main main) {
         this.main = main;
     }
 
-    public void click(Material warp, Player p){
-        if(warp == Material.AIR)return;
+    public void click(Material warp, Player p) {
+        if (warp == Material.AIR) return;
         ConfigurationSection warps = main.getConfig().getConfigurationSection("warps");
-        try{
+        try {
             World world = Bukkit.getWorld(warps.getConfigurationSection(warp.toString()).get("world").toString());
             Double x = warps.getConfigurationSection(warp.toString()).getDouble("x");
             Double y = warps.getConfigurationSection(warp.toString()).getDouble("y");
@@ -28,17 +28,17 @@ public class Warping {
             float pitch = warps.getConfigurationSection(warp.toString()).getLong("pitch");
             p.teleport(new Location(world, x, y, z, yaw, pitch));
             MessageManager.getInstance().msg(p, MessageManager.MessageType.INFO, "Warping to " + warps.getConfigurationSection(warp.toString()).get("name"));
-        }catch (Exception e){
+        } catch (Exception e) {
             MessageManager.getInstance().msg(p, MessageManager.MessageType.WARN, "This warp does not exist!");
         }
     }
 
-    public void setWarp(String name, String item, Player p){
+    public void setWarp(String name, String item, Player p) {
         ConfigurationSection warps = main.getConfig().getConfigurationSection("warps");
         Material icon;
-        try{
+        try {
             icon = Material.valueOf(item.toUpperCase());
-        }catch (Exception e){
+        } catch (Exception e) {
             MessageManager.getInstance().msg(p, MessageManager.MessageType.WARN, "Unknown item '" + item + "'");
             return;
         }

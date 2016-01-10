@@ -23,10 +23,10 @@ public class OnSignChange implements Listener {
     @EventHandler
     public void onSignChange(SignChangeEvent e) {
         try {
-            if(e.getLine(0).contains("[Cell]")){
-                if(e.getPlayer().isOp()){
+            if (e.getLine(0).contains("[Cell]")) {
+                if (e.getPlayer().isOp()) {
                     Player p = e.getPlayer();
-                    if(cm.getInt("ncl") != null){
+                    if (cm.getInt("ncl") != null) {
                         cm.set("ncl", (cm.getInt("ncl") + 1));
                     } else {
                         cm.set("ncl", 1);

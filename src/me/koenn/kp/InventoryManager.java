@@ -17,52 +17,19 @@ import java.util.List;
 
 public class InventoryManager {
 
-    //Variables:
-    private Inventory serverSelectorInventory;
-    Inventory playerInfo;
-    private Inventory warps;
-
     public HashMap<Player, Player> history = new HashMap<>();
     public ArrayList<Player> h = new ArrayList<>();
-
+    public ItemStack prison;
+    Inventory playerInfo;
+    //Variables:
+    private Inventory serverSelectorInventory;
+    private Inventory warps;
     private ItemStack[] servers = new ItemStack[6];
-
     private Plugin plugin;
     private Main main;
 
-    public String getServerSelector(){
-        return serverSelectorInventory.getName();
-    }
-    public ItemStack prison;
-
-    public Integer getWarns(Player p){
-        ConfigurationSection w = main.getConfig().getConfigurationSection("warns");
-        Integer a;
-        try{
-            a = w.getInt(p.getUniqueId().toString());
-        } catch (Exception ex){
-            w.createSection(p.getUniqueId().toString());
-            a = 0;
-            main.log("Failed to load warns for player... Setting value to 0.");
-        }
-        return a;
-    }
-
-    public Integer getMutes(Player p){
-        ConfigurationSection w = main.getConfig().getConfigurationSection("mutes");
-        Integer a;
-        try{
-            a = w.getInt(p.getUniqueId().toString());
-        } catch (Exception ex){
-            w.createSection(p.getUniqueId().toString());
-            a = 0;
-            main.log("Failed to load mutes for player... Setting value to 0.");
-        }
-        return a;
-    }
-
     //Constructor:
-    public InventoryManager(Plugin p, Main m){
+    public InventoryManager(Plugin p, Main m) {
         this.main = m;
         plugin = p;
         prison = new ItemStack(Material.IRON_FENCE);
@@ -77,7 +44,7 @@ public class InventoryManager {
         this.servers[4] = setData(ChatColor.RED + "" + ChatColor.BOLD + "Factions", ChatColor.DARK_RED + "Click to go to the Factions server", factions);
         Integer index = 0;
         serverSelectorInventory = Bukkit.createInventory(null, 9, ChatColor.YELLOW + "" + ChatColor.BOLD + "Server Selector");
-        for(ItemStack i : servers){
+        for (ItemStack i : servers) {
             serverSelectorInventory.setItem(index, i);
             index++;
         }
@@ -86,7 +53,37 @@ public class InventoryManager {
         this.warps = Bukkit.createInventory(null, 27, "Warps");
     }
 
-    private ItemStack setData(String n, String l, ItemStack i){
+    public String getServerSelector() {
+        return serverSelectorInventory.getName();
+    }
+
+    public Integer getWarns(Player p) {
+        ConfigurationSection w = main.getConfig().getConfigurationSection("warns");
+        Integer a;
+        try {
+            a = w.getInt(p.getUniqueId().toString());
+        } catch (Exception ex) {
+            w.createSection(p.getUniqueId().toString());
+            a = 0;
+            main.log("Failed to load warns for player... Setting value to 0.");
+        }
+        return a;
+    }
+
+    public Integer getMutes(Player p) {
+        ConfigurationSection w = main.getConfig().getConfigurationSection("mutes");
+        Integer a;
+        try {
+            a = w.getInt(p.getUniqueId().toString());
+        } catch (Exception ex) {
+            w.createSection(p.getUniqueId().toString());
+            a = 0;
+            main.log("Failed to load mutes for player... Setting value to 0.");
+        }
+        return a;
+    }
+
+    private ItemStack setData(String n, String l, ItemStack i) {
         ItemMeta im = i.getItemMeta();
         im.setDisplayName(n);
         List<String> lr = new ArrayList<String>();
@@ -96,14 +93,14 @@ public class InventoryManager {
         return i;
     }
 
-    public void openServerSelector(Player p){
+    public void openServerSelector(Player p) {
         InventoryManager ivm = new InventoryManager(plugin, main);
         prison = new ItemStack(Material.IRON_FENCE);
         serverSelectorInventory.setItem(1, setData(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + "Prison", ChatColor.GRAY + "Click to go to the Prison server", prison));
         p.openInventory(serverSelectorInventory);
     }
 
-    public Inventory playerInfoInit(Player p, Player s){
+    public Inventory playerInfoInit(Player p, Player s) {
         history.remove(s);
         history.put(s, p);
         h.add(s);
@@ -130,7 +127,7 @@ public class InventoryManager {
         i = new ItemStack(Material.BARRIER, 1);
         im = i.getItemMeta();
         im.setDisplayName(ChatColor.RED + p.getName() + "'s mutes");
-        l.add(ChatColor.DARK_AQUA + p.getName() + " got muted " +getMutes(p) + " times!");
+        l.add(ChatColor.DARK_AQUA + p.getName() + " got muted " + getMutes(p) + " times!");
         im.setLore(l);
         im.addItemFlags(ItemFlag.HIDE_PLACED_ON);
         i.setItemMeta(im);
@@ -139,11 +136,11 @@ public class InventoryManager {
         return playerInfo;
     }
 
-    private void initWarps(){
+    private void initWarps() {
         this.warps.clear();
         ConfigurationSection warps = main.getConfig().getConfigurationSection("warps");
         ArrayList<ItemStack> allwarps = new ArrayList<>();
-        if(warps.get("enabled").toString().equalsIgnoreCase("true")){
+        if (warps.get("enabled").toString().equalsIgnoreCase("true")) {
             warps.getKeys(false).stream().filter(x -> !(x.contains("enabled"))).forEach(x -> {
                 ItemStack it = new ItemStack(Material.valueOf(x));
                 ItemMeta im = it.getItemMeta();
@@ -160,7 +157,7 @@ public class InventoryManager {
         }
     }
 
-    public void openWarps(Player p){
+    public void openWarps(Player p) {
         initWarps();
         p.closeInventory();
         p.openInventory(warps);

@@ -24,11 +24,11 @@ public class OnLeave implements Listener {
             Player p = e.getPlayer();
             PermissionUser user = PermissionsEx.getUser(p);
             String prefix = translateAlternateColorCodes('&', user.getPrefix());
-            if(user.getPrefix() == "") {
+            if (user.getPrefix() == "") {
                 prefix = "";
             }
             String n;
-            if(main.getConfig().getConfigurationSection("nicknames").contains(p.getName())) {
+            if (main.getConfig().getConfigurationSection("nicknames").contains(p.getName())) {
                 n = main.getConfig().getConfigurationSection("nicknames").getString(p.getName());
             } else {
                 n = p.getName();

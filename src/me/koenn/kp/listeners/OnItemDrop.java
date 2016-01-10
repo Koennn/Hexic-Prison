@@ -18,7 +18,7 @@ public class OnItemDrop implements Listener {
     public void onItemDrop(PlayerDropItemEvent e) {
         try {
             Player p = e.getPlayer();
-            if(p.getWorld().getName().contains("Hub")){
+            if (p.getWorld().getName().contains("Hub")) {
                 e.setCancelled(true);
                 main.ivm.openServerSelector(p);
             }

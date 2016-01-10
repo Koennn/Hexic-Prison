@@ -47,7 +47,7 @@ public class OnRightclick implements Listener {
         return i;
     }
 
-    private ItemStack helpMenu(){
+    private ItemStack helpMenu() {
         ItemStack i = new ItemStack(Material.DIAMOND);
         ItemMeta im = i.getItemMeta();
         im.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Help Menu");
@@ -60,7 +60,7 @@ public class OnRightclick implements Listener {
         return i;
     }
 
-    private ItemStack serverInfo(){
+    private ItemStack serverInfo() {
         ItemStack i = new ItemStack(Material.EMERALD);
         ItemMeta im = i.getItemMeta();
         im.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Server Info");
@@ -77,42 +77,42 @@ public class OnRightclick implements Listener {
     public void onRightclick(PlayerInteractEvent e) {
         try {
             Player p = e.getPlayer();
-            if(p.getInventory().getItemInHand().equals(serverSelector())) {
+            if (p.getInventory().getItemInHand().equals(serverSelector())) {
                 e.setCancelled(true);
                 main.ivm.openServerSelector(p);
             }
-            if(p.getInventory().getItemInHand().equals(helpMenu())) {
+            if (p.getInventory().getItemInHand().equals(helpMenu())) {
                 e.setCancelled(true);
                 p.performCommand("help");
             }
-            if(p.getInventory().getItemInHand().equals(serverInfo())) {
+            if (p.getInventory().getItemInHand().equals(serverInfo())) {
                 e.setCancelled(true);
                 main.ShowServerInfo(p);
             }
-            if(e.getAction() == Action.RIGHT_CLICK_BLOCK){
-                if(e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.WALL_SIGN){
+            if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                if (e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.WALL_SIGN) {
                     main.log("Click");
                     Cells cells = new Cells(main, money);
                     cells.clickSign(e.getClickedBlock(), p);
                 }
             }
-            if(e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_BLOCK){
+            if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_BLOCK) {
                 Location loc = e.getClickedBlock().getLocation();
                 Vector v = new Vector(loc.getX(), loc.getBlockY(), loc.getZ());
-                ApplicableRegionSet set = main.wg.getRegionManager(loc.getWorld()).getApplicableRegions(v);
+                ApplicableRegionSet set = Main.wg.getRegionManager(loc.getWorld()).getApplicableRegions(v);
                 Iterator<ProtectedRegion> iter = set.iterator();
                 ProtectedRegion region = null;
-                while(iter.hasNext()) {
+                while (iter.hasNext()) {
                     ProtectedRegion nextRegion = iter.next();
-                    if(region == null || region.getPriority() > region.getPriority()) region = nextRegion;
+                    if (region == null || region.getPriority() > region.getPriority()) region = nextRegion;
                 }
-                try{
+                try {
                     region.getId();
-                } catch (Exception ex){
+                } catch (Exception ex) {
                     return;
                 }
-                if(region.getId().contains("cell") && !region.getMembers().contains(p.getUniqueId())){
-                    if(!p.isOp()){
+                if (region.getId().contains("cell") && !region.getMembers().contains(p.getUniqueId())) {
+                    if (!p.isOp()) {
                         e.setCancelled(true);
                         MessageManager.getInstance().msg(p, MessageManager.MessageType.WARN, "This is not your cell!");
                     }

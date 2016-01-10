@@ -11,11 +11,11 @@ import org.bukkit.inventory.EnchantingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Dye;
 
-public class Lapis implements Listener{
+public class Lapis implements Listener {
 
     private ItemStack lapis;
 
-    public Lapis(){
+    public Lapis() {
         Dye d = new Dye();
         d.setColor(DyeColor.BLUE);
         this.lapis = d.toItemStack();
@@ -23,28 +23,28 @@ public class Lapis implements Listener{
     }
 
     @EventHandler
-    public void openInventoryEvent(InventoryOpenEvent e){
-        if (e.getInventory() instanceof EnchantingInventory){
+    public void openInventoryEvent(InventoryOpenEvent e) {
+        if (e.getInventory() instanceof EnchantingInventory) {
             e.getInventory().setItem(1, this.lapis);
         }
     }
 
     @EventHandler
-    public void closeInventoryEvent(InventoryCloseEvent e){
+    public void closeInventoryEvent(InventoryCloseEvent e) {
         e.getInventory().setItem(1, null);
     }
 
     @EventHandler
-    public void inventoryClickEvent(InventoryClickEvent e){
-        if ((e.getInventory()) instanceof EnchantingInventory){
-            if (e.getSlot() == 1){
+    public void inventoryClickEvent(InventoryClickEvent e) {
+        if ((e.getInventory()) instanceof EnchantingInventory) {
+            if (e.getSlot() == 1) {
                 e.setCancelled(true);
             }
         }
     }
 
     @EventHandler
-    public void enchantItemEvent(EnchantItemEvent e){
+    public void enchantItemEvent(EnchantItemEvent e) {
         e.getInventory().setItem(1, this.lapis);
     }
 }

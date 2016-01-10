@@ -8,13 +8,13 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="bukkit" level="project" />
-    <orderEntry type="library" name="PermissionsEx-1.23.3" level="project" />
     <orderEntry type="library" name="ActionBarAPI" level="project" />
-    <orderEntry type="library" name="CraftIRC" level="project" />
     <orderEntry type="library" name="votifier-1.9" level="project" />
     <orderEntry type="library" name="worldguard-6.1" level="project" />
     <orderEntry type="library" name="worldedit-bukkit-6.1" level="project" />
     <orderEntry type="library" name="src1" level="project" />
     <orderEntry type="library" name="Essentials" level="project" />
+    <orderEntry type="library" name="PermissionsEx-1.23.31" level="project" />
+    <orderEntry type="library" name="CraftIRC1" level="project" />
   </component>
 </module>

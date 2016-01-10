@@ -37,7 +37,7 @@ public class Hub extends HexicCommand {
         return i;
     }
 
-    private ItemStack helpMenu(){
+    private ItemStack helpMenu() {
         ItemStack i = new ItemStack(Material.DIAMOND);
         ItemMeta im = i.getItemMeta();
         im.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Help Menu");
@@ -50,7 +50,7 @@ public class Hub extends HexicCommand {
         return i;
     }
 
-    private ItemStack serverInfo(){
+    private ItemStack serverInfo() {
         ItemStack i = new ItemStack(Material.EMERALD);
         ItemMeta im = i.getItemMeta();
         im.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Server Info");

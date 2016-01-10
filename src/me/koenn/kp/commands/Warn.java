@@ -13,12 +13,17 @@ public class Warn extends HexicCommand {
 
     private Main main;
 
-    public void addWarning(Player p){
+    public Warn(Main main) {
+        super("Warn a player", "/warn <player> <warning>", "w");
+        this.main = main;
+    }
+
+    public void addWarning(Player p) {
         ConfigurationSection w = main.getConfig().getConfigurationSection("warns");
         Integer a;
-        try{
+        try {
             a = w.getInt(p.getUniqueId().toString());
-        } catch (Exception ex){
+        } catch (Exception ex) {
             w.createSection(p.getUniqueId().toString());
             a = 0;
         }
@@ -41,10 +46,5 @@ public class Warn extends HexicCommand {
         } else {
             MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, super.getUsage());
         }
-    }
-
-    public Warn(Main main){
-        super("Warn a player", "/warn <player> <warning>", "w");
-        this.main = main;
     }
 }

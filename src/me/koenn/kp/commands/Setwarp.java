@@ -11,22 +11,22 @@ public class Setwarp extends HexicCommand {
     private Main main;
     private Warping warping;
 
+    public Setwarp(Main main, Warping warping) {
+        super("Set a warp", "/setwarp <name> <item>", "");
+        this.main = main;
+        this.warping = warping;
+    }
+
     public void onCommand(CommandSender sender, String[] args) {
-        if(args.length != 2){
+        if (args.length != 2) {
             MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, super.getUsage());
             return;
         }
-        if(!(sender instanceof Player)){
+        if (!(sender instanceof Player)) {
             MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, "You need to be a player to do this!");
             return;
         }
         Player p = Bukkit.getPlayer(((Player) sender).getUniqueId());
         warping.setWarp(args[0], args[1], p);
-    }
-
-    public Setwarp(Main main, Warping warping) {
-        super("Set a warp", "/setwarp <name> <item>", "");
-        this.main = main;
-        this.warping = warping;
     }
 }

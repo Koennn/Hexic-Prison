@@ -19,7 +19,7 @@ public class OnVote implements Listener {
     @SuppressWarnings("deprecation")
     public void onVote(VotifierEvent e) {
         try {
-            if(!(Bukkit.getServer().getPlayer(e.getVote().getUsername()).isOnline())){
+            if (!(Bukkit.getServer().getPlayer(e.getVote().getUsername()).isOnline())) {
                 Player p = Bukkit.getServer().getPlayer(e.getVote().getUsername());
                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "key " + p.getName() + " voting");
             }

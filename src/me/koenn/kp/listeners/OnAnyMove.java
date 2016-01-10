@@ -38,8 +38,8 @@ public class OnAnyMove implements Listener {
     public void onAnyMove(PlayerMoveEvent e) {
         try {
             Player p = e.getPlayer();
-            if(p.getWorld().getName().contains("Hub")){
-                if(p.getGameMode() != GameMode.ADVENTURE && !(main.admins.containsKey(p.getUniqueId()))){
+            if (p.getWorld().getName().contains("Hub")) {
+                if (p.getGameMode() != GameMode.ADVENTURE && !(main.admins.containsKey(p.getUniqueId()))) {
                     p.setGameMode(GameMode.ADVENTURE);
                 }
                 p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1000000, 4, true, false));
@@ -50,16 +50,16 @@ public class OnAnyMove implements Listener {
             ApplicableRegionSet set = Main.wg.getRegionManager(loc.getWorld()).getApplicableRegions(v);
             Iterator<ProtectedRegion> iter = set.iterator();
             ProtectedRegion region = null;
-            while(iter.hasNext()) {
+            while (iter.hasNext()) {
                 ProtectedRegion nextRegion = iter.next();
-                if(region == null || region.getPriority() > region.getPriority()) region = nextRegion;
+                if (region == null || region.getPriority() > region.getPriority()) region = nextRegion;
             }
-            try{
+            try {
                 region.getId();
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 return;
             }
-            if(region.getId().contains("cell")) {
+            if (region.getId().contains("cell")) {
                 ConfigurationSection s = main.getConfig().getConfigurationSection(region.getId());
                 if (!region.getMembers().contains(p.getUniqueId())) {
                     World world = Bukkit.getWorld(s.get("tworld").toString());

@@ -12,12 +12,12 @@ import org.bukkit.command.CommandSender;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
-public class CommandHandler implements CommandExecutor{
+public class CommandHandler implements CommandExecutor {
 
 
     private ArrayList<HexicCommand> cmds = new ArrayList<>();
 
-    public void setup(Main main, Ranks ranks, InventoryManager ivm, Warping warping){
+    public void setup(Main main, Ranks ranks, InventoryManager ivm, Warping warping) {
         cmds.add(new Warn(main));
         cmds.add(new Adminmode(main));
         cmds.add(new Adminregister(main));
@@ -39,22 +39,22 @@ public class CommandHandler implements CommandExecutor{
         cmds.add(new Unrent(main));
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         Bukkit.getLogger().log(Level.INFO, "Execute " + cmd.getName());
 
         HexicCommand c = getHexicCommand(cmd.getName());
 
-        if(c != null){
+        if (c != null) {
             c.onCommand(sender, args);
         }
 
         return true;
     }
 
-    private HexicCommand getHexicCommand(String name){
-        for(HexicCommand cmd: cmds){
-            if(cmd.getClass().getSimpleName().equalsIgnoreCase(name))return cmd;
+    private HexicCommand getHexicCommand(String name) {
+        for (HexicCommand cmd : cmds) {
+            if (cmd.getClass().getSimpleName().equalsIgnoreCase(name)) return cmd;
         }
         return null;
     }

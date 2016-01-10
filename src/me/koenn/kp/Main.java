@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class Main extends JavaPlugin{
+public class Main extends JavaPlugin {
 
     public static Main main;
 
@@ -44,11 +44,11 @@ public class Main extends JavaPlugin{
         return main;
     }
 
-    public void log(String msg, String player){
-        try{
+    public void log(String msg, String player) {
+        try {
             Date now = new Date();
             SimpleDateFormat stamp = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            if(!getDataFolder().exists()) {
+            if (!getDataFolder().exists()) {
                 getDataFolder().mkdir();
             }
             if (!saveTo.exists()) {
@@ -60,12 +60,12 @@ public class Main extends JavaPlugin{
             pw.println("[" + stamp.format(now) + "] (" + player + ") " + msg);
             pw.flush();
             pw.close();
-        } catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    public void disablePlugin(String reason){
+    public void disablePlugin(String reason) {
         this.setEnabled(false);
         log("Disabled due to " + reason);
     }
@@ -132,39 +132,39 @@ public class Main extends JavaPlugin{
             return null;
         }
         log("Successfully hooked into WorldGuard");
-        return (WorldGuardPlugin)w;
+        return (WorldGuardPlugin) w;
     }
 
-    public void log(String s){
+    public void log(String s) {
         Bukkit.getLogger().log(Level.INFO, "[HexicPrison] " + s);
     }
 
-    public void ShowServerInfo(Player p){
+    public void ShowServerInfo(Player p) {
         p.performCommand("info");
     }
 
     @SuppressWarnings("deprecation")
     public boolean checkPlayer(String[] p, int i, int a, CommandSender s) {
-        if(p.length < a){
+        if (p.length < a) {
             return false;
         }
-        try{
-            if (!(Bukkit.getServer().getPlayer(p[i]).isOnline())){
+        try {
+            if (!(Bukkit.getServer().getPlayer(p[i]).isOnline())) {
                 return false;
             }
-        } catch(NullPointerException e){
+        } catch (NullPointerException e) {
             return false;
         }
         return true;
     }
 
-    public void catchEvent(Exception e, Player p, String s){
+    public void catchEvent(Exception e, Player p, String s) {
         Bukkit.getServer().getLogger().severe("ERROR WHILE PERFORMING '" + s + "' BY PLAYER '" + p.getName() + "':");
         e.printStackTrace();
         MessageManager.getInstance().msg(p, MessageManager.MessageType.WARN, "An error occurred while doing this. Please contact Koenn.");
     }
 
-    public void noPerms(Player p){
+    public void noPerms(Player p) {
         MessageManager.getInstance().msg(p, MessageManager.MessageType.WARN, "You do not have the permission to do this.");
     }
 }

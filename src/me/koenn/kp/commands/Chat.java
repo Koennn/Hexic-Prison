@@ -10,6 +10,11 @@ public class Chat extends HexicCommand {
     private Main main;
 
 
+    public Chat(Main main) {
+        super("Change chat mode", "/chat", "ch");
+        this.main = main;
+    }
+
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         Player s = (Player) sender;
@@ -17,17 +22,12 @@ public class Chat extends HexicCommand {
             main.mode.remove(s);
             main.mode.put(s, "global");
             MessageManager.getInstance().msg(sender, MessageManager.MessageType.INFO, "You are now listening to " + ChatColor.YELLOW + ChatColor.BOLD + "Global" + ChatColor.GREEN + " chat.");
-        } else if(main.mode.get(s) == "global") {
+        } else if (main.mode.get(s) == "global") {
             main.mode.remove(s);
             main.mode.put(s, "server");
             MessageManager.getInstance().msg(sender, MessageManager.MessageType.INFO, "You are now listening to " + ChatColor.YELLOW + ChatColor.BOLD + "Server" + ChatColor.GREEN + " chat.");
         } else {
             s.kickPlayer(ChatColor.BLUE + "" + ChatColor.BOLD + "Please relog!");
         }
-    }
-
-    public Chat(Main main) {
-        super("Change chat mode", "/chat", "ch");
-        this.main = main;
     }
 }

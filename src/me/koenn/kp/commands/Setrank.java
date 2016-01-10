@@ -19,15 +19,15 @@ public class Setrank extends HexicCommand {
 
     @SuppressWarnings("deprecation")
     public void onCommand(CommandSender sender, String[] args) {
-        if(!(main.checkPlayer(args, 0, 2, sender))){
+        if (!(main.checkPlayer(args, 0, 2, sender))) {
             MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, super.getUsage());
             return;
         }
         Player p = Bukkit.getPlayer(args[0]);
-        try{
+        try {
             ranks.setRank(p, Ranks.PrisonRank.valueOf(args[1].toUpperCase()));
             MessageManager.getInstance().msg(sender, MessageManager.MessageType.INFO, "Set " + p.getName() + "'s rank to " + args[1]);
-        }catch (Exception e){
+        } catch (Exception e) {
             MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, "Unknown rank '" + args[1] + "'");
         }
     }

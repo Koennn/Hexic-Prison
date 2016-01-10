@@ -17,8 +17,8 @@ public class Adminregister extends HexicCommand {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         Player s = (Player) sender;
-        if(args.length == 1){
-            if(s.isOp()){
+        if (args.length == 1) {
+            if (s.isOp()) {
                 main.admins.put(s.getUniqueId(), args[0]);
                 MessageManager.getInstance().msg(sender, MessageManager.MessageType.INFO, "Registered username '" + s.getName() + "' with password '" + args[0] + "'");
                 main.getConfig().getConfigurationSection("passwords").createSection(s.getUniqueId().toString());

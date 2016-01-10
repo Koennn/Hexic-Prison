@@ -23,17 +23,17 @@ public class CommandPreprocess implements Listener {
     public void commandPreprocess(PlayerCommandPreprocessEvent e) {
         try {
             Player p = e.getPlayer();
-            if(e.getMessage().contains(":") && !(e.getMessage().contains("warp")) && !(e.getMessage().contains("kit")) && !(p.isOp())){
+            if (e.getMessage().contains(":") && !(e.getMessage().contains("warp")) && !(e.getMessage().contains("kit")) && !(p.isOp())) {
                 e.setCancelled(true);
                 MessageManager.getInstance().msg(p, MessageManager.MessageType.WARN, "This command is not allowed!");
             }
-            if(main.block.contains(p)){
-                if(!(e.getMessage().contains("leave")) && !(e.getMessage().contains("kit"))){
+            if (main.block.contains(p)) {
+                if (!(e.getMessage().contains("leave")) && !(e.getMessage().contains("kit"))) {
                     e.setCancelled(true);
                     p.sendMessage(ChatColor.RED + "You cant do that in a PvP arena!");
                 }
             }
-            if(p.isOp()){
+            if (p.isOp()) {
                 main.log(e.getMessage(), p.getName());
             }
             if (e.getMessage().contains("reload")) {

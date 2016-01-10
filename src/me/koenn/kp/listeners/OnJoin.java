@@ -12,34 +12,34 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import static org.bukkit.ChatColor.translateAlternateColorCodes;
 
-public class OnJoin implements Listener{
+public class OnJoin implements Listener {
 
     private Main main;
     private Ranks ranks;
 
-    public OnJoin(Main main, Ranks ranks){
+    public OnJoin(Main main, Ranks ranks) {
         this.main = main;
         this.ranks = ranks;
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e){
-        try{
+    public void onJoin(PlayerJoinEvent e) {
+        try {
             Player p = e.getPlayer();
             PermissionUser user = PermissionsEx.getUser(p);
             String prefix = translateAlternateColorCodes('&', user.getPrefix());
-            if(user.getPrefix() == "") {
+            if (user.getPrefix() == "") {
                 prefix = " ";
             }
             String n;
-            if(main.getConfig().getConfigurationSection("nicknames").contains(p.getName())) {
+            if (main.getConfig().getConfigurationSection("nicknames").contains(p.getName())) {
                 n = main.getConfig().getConfigurationSection("nicknames").getString(p.getName());
             } else {
                 n = p.getName();
             }
-            if(!e.getPlayer().hasPlayedBefore()) {
+            if (!e.getPlayer().hasPlayedBefore()) {
                 ranks.setRank(p, Ranks.PrisonRank.A);
-                for(int i = 0; i < 94; i++){
+                for (int i = 0; i < 94; i++) {
                     p.sendMessage("");
                 }
                 sendJoin(p);
@@ -51,20 +51,22 @@ public class OnJoin implements Listener{
             main.mode.remove(p);
             main.mode.put(p, "server");
             main.spam.remove(p);
-            for(int i = 0; i < 94; i++){
+            for (int i = 0; i < 94; i++) {
                 p.sendMessage("");
             }
             sendJoin(p);
-            if(main.getConfig().getConfigurationSection("passwords").contains(p.getUniqueId().toString())){
+            if (main.getConfig().getConfigurationSection("passwords").contains(p.getUniqueId().toString())) {
                 p.sendMessage(translateAlternateColorCodes('&', "&cAdminmode is disabled for '%player%'. Use /adminmode <password> to enable."));
             }
-            if(p.isOp()){ p.performCommand("ircusers"); }
-        }catch (Exception ex){
+            if (p.isOp()) {
+                p.performCommand("ircusers");
+            }
+        } catch (Exception ex) {
             main.catchEvent(ex, e.getPlayer(), e.getEventName());
         }
     }
 
-    private void sendJoin(Player p){
+    private void sendJoin(Player p) {
         p.sendMessage(translateAlternateColorCodes('&', "&f&l&m+---------------------------------------+"));
         p.sendMessage(translateAlternateColorCodes('&', "&r             &aWelcome &e&l" + p.getName() + " &ato &e&lHexic Network&a!"));
         p.sendMessage(translateAlternateColorCodes('&', "&r               &aNews: &b20% Christmas Release Sale"));

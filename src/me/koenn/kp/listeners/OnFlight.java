@@ -18,7 +18,7 @@ public class OnFlight implements Listener {
     public void onFlight(PlayerToggleFlightEvent e) {
         try {
             Player p = e.getPlayer();
-            if(!(p.hasPermission("essentials.fly"))){
+            if (!(p.hasPermission("essentials.fly"))) {
                 e.setCancelled(true);
                 main.noPerms(p);
             }

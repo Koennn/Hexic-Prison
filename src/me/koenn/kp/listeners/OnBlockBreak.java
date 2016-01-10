@@ -18,7 +18,7 @@ public class OnBlockBreak implements Listener {
     public void onBlockBreak(BlockBreakEvent e) {
         try {
             Player p = e.getPlayer();
-            if(p.getInventory().firstEmpty() == -1){
+            if (p.getInventory().firstEmpty() == -1) {
                 p.performCommand("sellall");
             }
         } catch (Exception ex) {

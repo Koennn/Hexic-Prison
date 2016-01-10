@@ -8,15 +8,20 @@ public class Adminmode extends HexicCommand {
 
     private Main main;
 
+    public Adminmode(Main main) {
+        super("Login to adminmode", "/adminmode <password>", "am");
+        this.main = main;
+    }
+
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         Player s = (Player) sender;
-        if(args.length == 1){
-            if(main.getConfig().getConfigurationSection("passwords").contains(s.getUniqueId().toString())){
+        if (args.length == 1) {
+            if (main.getConfig().getConfigurationSection("passwords").contains(s.getUniqueId().toString())) {
                 main.admins.remove(s.getUniqueId());
                 main.admins.put(s.getUniqueId(), main.getConfig().getConfigurationSection("passwords").get(s.getUniqueId().toString()).toString());
             }
-            if(!(s.isOp())){
+            if (!(s.isOp())) {
                 if (main.admins.containsKey(s.getUniqueId())) {
                     if (main.admins.get(s.getUniqueId()).equals(args[0])) {
                         s.setOp(true);
@@ -33,16 +38,11 @@ public class Adminmode extends HexicCommand {
                 MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, "You are already logged in!");
             }
         } else {
-            if(main.admins.containsKey(s.getUniqueId())) {
+            if (main.admins.containsKey(s.getUniqueId())) {
                 MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, "Please specify a password!");
             } else {
                 MessageManager.getInstance().msg(sender, MessageManager.MessageType.WARN, "You are not an admin!");
             }
         }
-    }
-
-    public Adminmode(Main main) {
-        super("Login to adminmode", "/adminmode <password>", "am");
-        this.main = main;
     }
 }

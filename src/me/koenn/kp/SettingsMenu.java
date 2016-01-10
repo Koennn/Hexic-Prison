@@ -19,21 +19,19 @@ import java.util.List;
 
 public class SettingsMenu implements Listener {
 
+    public String textColor = ChatColor.GREEN + "";
+    public String titleColor = ChatColor.YELLOW + "" + ChatColor.BOLD;
     private ItemStack[] settings;
     //private ItemStack[] adminSettings;
     //private HashMap<Player, Boolean> admin = new HashMap<Player, Boolean>();
     private ArrayList<Player> hide = new ArrayList<>();
-
     private Main main;
 
-    public String textColor = ChatColor.GREEN + "";
-    public String titleColor = ChatColor.YELLOW + "" + ChatColor.BOLD;
-
-    public SettingsMenu(Main m){
+    public SettingsMenu(Main m) {
         this.main = m;
     }
 
-    private void initSettings(Player p){
+    private void initSettings(Player p) {
         this.settings = new ItemStack[3];
 
         String m;
@@ -44,7 +42,7 @@ public class SettingsMenu implements Listener {
         im1.setDisplayName(titleColor + "Chat mode");
         im1.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         List<String> l1 = new ArrayList<String>();
-        if(main.mode.get(p) == "global"){
+        if (main.mode.get(p) == "global") {
             m = "Server";
             im1.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
         } else {
@@ -62,7 +60,7 @@ public class SettingsMenu implements Listener {
         im2.setDisplayName(titleColor + "Hide players");
         im2.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         List<String> l2 = new ArrayList<String>();
-        if(!(this.hide.contains(p))){
+        if (!(this.hide.contains(p))) {
             m = "Hide";
         } else {
             m = "Show";
@@ -88,12 +86,12 @@ public class SettingsMenu implements Listener {
 
     }
 
-    public void openMenu(Player p){
+    public void openMenu(Player p) {
         p.openInventory(initMenu(p));
     }
 
-    private Inventory initMenu(Player p){
-        Inventory settingsMenu = Bukkit.createInventory(null, 27, ChatColor.YELLOW + "" + ChatColor.BOLD +  "Settings");
+    private Inventory initMenu(Player p) {
+        Inventory settingsMenu = Bukkit.createInventory(null, 27, ChatColor.YELLOW + "" + ChatColor.BOLD + "Settings");
         initSettings(p);
         //initAdminSettings(p);
         for (ItemStack setting : settings) {
@@ -103,15 +101,15 @@ public class SettingsMenu implements Listener {
     }
 
     @EventHandler
-    public void inventoryClick(InventoryClickEvent e){
-        try{
+    public void inventoryClick(InventoryClickEvent e) {
+        try {
             Player p = (Player) e.getWhoClicked();
-            if (e.getInventory().getName().contains(ChatColor.YELLOW + "" + ChatColor.BOLD + "Settings")){
+            if (e.getInventory().getName().contains(ChatColor.YELLOW + "" + ChatColor.BOLD + "Settings")) {
                 e.setCancelled(true);
                 if (e.getSlot() == 0) {
                     p.performCommand("chat");
                     main.spam.remove(p);
-                } else if(e.getSlot() == 1) {
+                } else if (e.getSlot() == 1) {
                     if (hide.contains(p)) {
                         Bukkit.getServer().getOnlinePlayers().forEach(p::showPlayer);
                         p.sendMessage(textColor + "All players are now " + titleColor + "Visible.");
@@ -121,13 +119,13 @@ public class SettingsMenu implements Listener {
                         p.sendMessage(textColor + "All players are now " + titleColor + "Hidden.");
                         hide.add(p);
                     }
-                } else if(e.getSlot() == 2){
+                } else if (e.getSlot() == 2) {
                     p.performCommand("helps");
                 }
                 p.playSound(p.getLocation(), Sound.ORB_PICKUP, 1F, 0.2F);
                 p.openInventory(initMenu(p));
             }
-        } catch(NullPointerException ex){
+        } catch (NullPointerException ex) {
             main.catchEvent(ex, (Player) e.getWhoClicked(), e.getEventName());
         }
     }
